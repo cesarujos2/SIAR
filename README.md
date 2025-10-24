@@ -308,100 +308,111 @@ Contratar un servicio especializado para el diseño, desarrollo e implementació
 La plataforma SIAR implementa una **arquitectura híbrida desacoplada** que combina servicios en la nube (Frontend y Backend CMS) con infraestructura On-Premise (Servidor Geoespacial y Base de Datos GIS).
 
 ```
-                         USUARIOS FINALES
-                               │
-                               ▼
-      ┌────────────────────────────────────────────────┐
-      │         CAPA DE PRESENTACIÓN (Cloud)           │
-      │  ┌─────────────────┐  ┌──────────────────┐    │
-      │  │  Portal Web PWA │  │  App Móvil       │    │
-      │  │  (Next.js)      │  │  (Capacitor)     │    │
-      │  └────────┬────────┘  └────────┬─────────┘    │
-      └───────────┼──────────────────────┼─────────────┘
-                  │                      │
-                  │ REST/GraphQL API     │
-                  ▼                      ▼
-      ┌────────────────────────────────────────────────┐
-      │      CAPA DE APLICACIÓN (Cloud)                │
-      │  ┌──────────────────────────────────────────┐  │
-      │  │         Strapi CMS                       │  │
-      │  │  (Gestión de Contenidos)                 │  │
-      │  └────────────┬─────────────────────────────┘  │
-      └───────────────┼────────────────────────────────┘
-                      │ PostgreSQL
-                      ▼
-      ┌────────────────────────────────────────────────┐
-      │  BD CLOUD (PostgreSQL + PostGIS) - ÚNICA       │
-      │  ┌──────────────────────────────────────────┐  │
-      │  │  Schema: strapi                          │  │
-      │  │  - Tablas de Strapi CMS                  │  │
-      │  │  - Usuarios, permisos, configuración     │  │
-      │  ├──────────────────────────────────────────┤  │
-      │  │  Schema: public_data                     │  │
-      │  │  - Datos GIS simplificados (desde ETL)   │  │
-      │  │  - Geometrías optimizadas para web       │  │
-      │  │  - Series temporales agregadas           │  │
-      │  └──────────────────────────────────────────┘  │
-      └─────────────────▲──────────────────────────────┘
-                        │
-                        │ ETL Programado (carga de datos)
-                        │
-   ═════════════════════╪═══════════════════════════════
-   INFRAESTRUCTURA ON-PREMISE (Servidor GRRNGA)
-   ═════════════════════╪═══════════════════════════════
-                        │
-      ┌─────────────────┴──────────────────────────────┐
-      │  ┌──────────────────────────────────────────┐  │
-      │  │    SERVIDOR GEOESPACIAL                  │  │
-      │  │    GeoServer / ArcGIS Server             │  │
-      │  │    Puerto: 8080 / 6080                   │  │
-      │  │  ┌────────────────────────────────────┐  │  │
-      │  │  │ Servicios OGC publicados:          │  │  │
-      │  │  │ • WMS → Portal Web (imágenes)      │  │  │
-      │  │  │ • WFS → Descarga de datos          │  │  │
-      │  │  │ • WMTS → App Móvil (tiles)         │  │  │
-      │  │  └────────────────────────────────────┘  │  │
-      │  └──────────────┬───────────────────────────┘  │
-      │                 │ SQL Queries                  │
-      │                 ▼                              │
-      │  ┌──────────────────────────────────────────┐  │
-      │  │  PostgreSQL + PostGIS (On-Premise)       │  │
-      │  │  ┌────────────────────────────────────┐  │  │
-      │  │  │ Schema: gis_master                 │  │  │
-      │  │  │ - Capas GIS completas publicables  │  │  │
-      │  │  ├────────────────────────────────────┤  │  │
-      │  │  │ Schema: gis_working                │  │  │
-      │  │  │ - Capas en edición                 │  │  │
-      │  │  ├────────────────────────────────────┤  │  │
-      │  │  │ Schema: gis_temp                   │  │  │
-      │  │  │ - Análisis temporal                │  │  │
-      │  │  └────────────────────────────────────┘  │  │
-      │  └───────────┬──────────────────────────────┘  │
-      │              │ Conexión directa                │
-      │              ▼                                 │
-      │  ┌──────────────────────────────────────────┐  │
-      │  │  Estaciones de Trabajo GIS               │  │
-      │  │  • 1 PC Workstation                      │  │
-      │  │  • 2 Laptops                             │  │
-      │  │  Software: ArcGIS Pro / QGIS             │  │
-      │  └──────────────────────────────────────────┘  │
-      └────────────────────────────────────────────────┘
+                        USUARIOS FINALES
+                              │
+                              ▼
+     ┌────────────────────────────────────────────────┐
+     │         CAPA DE PRESENTACIÓN (Cloud)           │
+     │  ┌─────────────────┐  ┌──────────────────┐     │
+     │  │  Portal Web PWA │  │  App Móvil       │     │
+     │  │  (Next.js)      │  │  (Capacitor)     │     │
+     │  └────┬──────┬─────┘  └────┬──────┬──────┘     │
+     └───────┼──────┼─────────────┼──────┼────────────┘
+             │      │             │      │
+             │      └────Build────┘      │
+             │                           │
+    REST/GraphQL (contenido)             │
+             │                           │ HTTP
+             ▼                           │ (servicios OGC:
+     ┌──────────────────────┐            │  WMS, WFS, WMTS)
+     │  CAPA DE APLICACIÓN  │            │
+     │      (Cloud)         │            │
+     │  ┌────────────────┐  │            │
+     │  │  Strapi CMS    │  │            │
+     │  └───────┬────────┘  │            │
+     └──────────┼───────────┘            │
+                │ PostgreSQL             │
+                ▼                        │
+     ┌──────────────────────┐            │
+     │  BD CLOUD (ÚNICA)    │            │
+     │  ┌────────────────┐  │            │
+     │  │ Schema:strapi  │  │            │
+     │  ├────────────────┤  │            │
+     │  │ Schema:        │  │            │
+     │  │ public_data    │  │            │
+     │  └────────────────┘  │            │
+     └──────────▲───────────┘            │
+                │ ETL                    │
+  ══════════════╪════════════════════════╪═══════════
+  ON-PREMISE    │                        │
+  ══════════════╪════════════════════════╪═══════════
+                │                        │
+     ┌──────────┴────────────────────────┼─────────┐
+     │                                   ▼         │
+     │         ┌───────────────────────────────┐   │
+     │         │  SERVIDOR GEOESPACIAL         │   │
+     │         │  GeoServer / ArcGIS Server    │   │
+     │         │  Puerto: 8080 / 6080          │   │
+     │         │                               │   │
+     │         │  Expone servicios OGC:        │   │
+     │         │  • WMS (mapas imagen)         │   │
+     │         │  • WFS (vectores)             │   │
+     │         │  • WMTS (tiles)               │   │
+     │         └───────────┬───────────────────┘   │
+     │                     │ SQL Queries           │
+     │                     ▼                       │
+     │         ┌───────────────────────────────┐   │
+     │         │  PostgreSQL + PostGIS         │   │
+     │         │  (On-Premise)                 │   │
+     │         │  ┌─────────────────────────┐  │   │
+     │         │  │ gis_master (publicable) │  │   │
+     │         │  │ gis_working (edición)   │  │   │
+     │         │  │ gis_temp (análisis)     │  │   │
+     │         │  └─────────────────────────┘  │   │
+     │         └───────────┬───────────────────┘   │
+     │                     │ Conexión directa      │
+     │                     ▼                       │
+     │         ┌───────────────────────────────┐   │
+     │         │  Estaciones de Trabajo GIS    │   │
+     │         │  • 1 PC Workstation           │   │
+     │         │  • 2 Laptops                  │   │
+     │         │  Software: ArcGIS Pro / QGIS  │   │
+     │         └───────────────────────────────┘   │
+     └─────────────────────────────────────────────┘
+
+FLUJO DE DATOS:
+1. Frontend → Strapi (REST API) → BD Cloud [contenido editorial]
+2. Frontend → GeoServer (OGC) → BD PostGIS On-Premise [mapas]
+3. BD PostGIS On-Premise → ETL → BD Cloud (public_data) [opcional]
 ```
 
 #### 2.2.6. El Servidor Geoespacial (GeoServer/ArcGIS Server)
 
-El Servidor Geoespacial es el **puente tecnológico** entre los datos GIS almacenados en la base de datos espacial (PostgreSQL/PostGIS) y los usuarios finales que acceden a través del portal web y la aplicación móvil.
+El Servidor Geoespacial es el **intermediario esencial** que permite que el frontend (Portal Web y App Móvil) consuma los datos geográficos de forma segura y optimizada.
 
 ##### ¿Por qué es necesario?
 
-Los navegadores web y las aplicaciones móviles **no pueden leer directamente** archivos Shapefile, GeoTIFF o consultar bases de datos PostGIS. Necesitan datos en formatos web estándar (imágenes PNG, JSON, tiles). El Servidor Geoespacial realiza esta transformación en tiempo real.
+**El frontend NUNCA se conecta directamente a la base de datos PostGIS.** En su lugar, el frontend consume **servicios web estandarizados (OGC)** que expone el Servidor Geoespacial.
+
+**Flujo correcto:**
+```
+Frontend (Leaflet/MapLibre) 
+    → HTTP Request: http://geoserver.grrnga.gob.pe/wms?layer=anp&bbox=...
+        → GeoServer recibe petición
+            → GeoServer consulta PostGIS: SELECT geom FROM anp WHERE ...
+                → GeoServer renderiza y transforma
+                    → GeoServer devuelve PNG/JSON al Frontend
+```
+
+Los navegadores web **no pueden** ejecutar consultas SQL directamente contra PostgreSQL por razones de seguridad y compatibilidad. El Servidor Geoespacial realiza esta transformación de forma segura.
 
 ##### ¿Qué hace exactamente?
 
-**1. Conexión a PostgreSQL/PostGIS**
-- Se conecta a la base de datos espacial On-Premise vía protocolo PostgreSQL
+**1. Conexión ÚNICAMENTE a PostgreSQL/PostGIS On-Premise**
+- Se conecta SOLO a la base de datos espacial On-Premise (localhost en el servidor)
 - Ejecuta consultas SQL espaciales: `SELECT ST_AsGeoJSON(geom) FROM capas WHERE tema='agua'`
-- Accede a tablas de los schemas: `gis_master` (capas publicables), `gis_working` (en edición)
+- Accede a tablas del schema: `gis_master` (capas publicables para el portal)
+- **NUNCA se conecta a la BD Cloud** - esa es responsabilidad exclusiva de Strapi
 
 **2. Transformación y Renderización**
 - **Vectores → Imágenes:** Convierte polígonos/líneas/puntos en imágenes PNG/JPEG con estilos aplicados
@@ -435,14 +446,18 @@ Los navegadores web y las aplicaciones móviles **no pueden leer directamente** 
 - Almacena en caché local (`/geowebcache`) para servir miles de peticiones/segundo
 - Actualiza automáticamente cuando detecta cambios en PostGIS
 
-**5. Publicación de Servicios OGC Estándar**
+**5. Expone Servicios OGC que el Frontend consume**
 
-| Servicio | URL Ejemplo | Qué retorna | Usado para |
-|----------|-------------|-------------|------------|
-| **WMS** | `http://gis.grrnga.local:8080/geoserver/siar/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=anp&BBOX=-79,-8.5,-78,-7.5&WIDTH=800&HEIGHT=600&FORMAT=image/png` | Imagen PNG del mapa | Visualización en el geovisor web |
-| **WFS** | `http://gis.grrnga.local:8080/geoserver/siar/wfs?SERVICE=WFS&REQUEST=GetFeature&TYPENAME=cuencas&OUTPUTFORMAT=application/json` | GeoJSON con geometrías y atributos | Descarga de datos, análisis en navegador |
-| **WMTS** | `http://gis.grrnga.local:8080/geoserver/gwc/service/wmts?layer=siar:basemap&tilematrixset=EPSG:3857&tilematrix=10&tilerow=512&tilecol=341` | Tile individual PNG 256x256 | Cache de mapas en app móvil (modo offline) |
-| **WCS** | `http://gis.grrnga.local:8080/geoserver/siar/wcs?SERVICE=WCS&REQUEST=GetCoverage&COVERAGEID=dem` | Archivo GeoTIFF (raster) | Descarga de DEM, ortofotografías |
+Estos servicios HTTP son lo que el frontend (Leaflet/MapLibre) consume para mostrar mapas:
+
+| Servicio | URL Ejemplo | Qué retorna | Consumido por |
+|----------|-------------|-------------|---------------|
+| **WMS** | `http://gis.grrnga.gob.pe:8080/geoserver/siar/wms?LAYERS=anp&...` | Imagen PNG del mapa | **Frontend Portal Web** (visualización) |
+| **WFS** | `http://gis.grrnga.gob.pe:8080/geoserver/siar/wfs?TYPENAME=cuencas&...` | GeoJSON con geometrías | **Frontend Portal Web** (descargas, análisis) |
+| **WMTS** | `http://gis.grrnga.gob.pe:8080/geoserver/gwc/service/wmts?layer=siar:basemap&...` | Tile PNG 256x256 | **App Móvil** (cache offline) |
+| **WCS** | `http://gis.grrnga.gob.pe:8080/geoserver/siar/wcs?COVERAGEID=dem&...` | GeoTIFF (raster) | **Frontend** (descargas especializadas) |
+
+**IMPORTANTE:** El frontend SOLO hace peticiones HTTP a estos endpoints. Nunca ejecuta SQL ni se conecta directamente a PostgreSQL.
 
 **6. Control de Acceso y Seguridad**
 - Autenticación básica o integración con LDAP/Active Directory
@@ -468,31 +483,39 @@ Los navegadores web y las aplicaciones móviles **no pueden leer directamente** 
 
 ##### ¿Cómo se integra con el resto de la arquitectura?
 
-**Flujo de Trabajo Completo:**
+**Conexiones del Frontend - Arquitectura Desacoplada:**
 
-1. **Editor GIS** carga capa nueva a PostgreSQL (vía QGIS/ArcGIS Pro)
+El frontend tiene **DOS conexiones independientes**:
+1. **Frontend → Strapi (REST API) → BD Cloud:** Obtiene metadatos, noticias, indicadores, texto editorial
+2. **Frontend → GeoServer (OGC HTTP) → BD PostGIS On-Premise:** Obtiene capas geográficas (imágenes, tiles, vectores)
+
+**Flujo de Trabajo Completo (de carga a visualización):**
+
+1. **Editor GIS** carga capa nueva a PostgreSQL On-Premise (vía QGIS/ArcGIS Pro)
 2. **PostgreSQL/PostGIS** almacena la capa en schema `gis_master`
 3. **Editor GIS** registra la capa en GeoServer:
    - Crea un nuevo "Layer" conectado a la tabla PostGIS
    - Aplica estilo SLD
    - Define permisos de acceso
    - Genera cache de tiles (opcional, para capas estáticas)
-4. **Editor GIS** registra metadatos en Strapi:
+4. **Editor GIS** registra metadatos en Strapi CMS:
    - Crea entrada en Content Type `GeoLayer`
-   - Campo `endpoints.wms`: `http://gis.grrnga.local:8080/.../wms`
-   - Campo `endpoints.wfs`: `http://gis.grrnga.local:8080/.../wfs`
-5. **Frontend (Next.js)** consulta Strapi API:
+   - Campo `endpoints.wms`: `http://gis.grrnga.gob.pe:8080/.../wms`
+   - Campo `endpoints.wfs`: `http://gis.grrnga.gob.pe:8080/.../wfs`
+5. **Frontend (Next.js)** consulta Strapi API para obtener metadatos:
    - `GET /api/geo-layers?filters[theme][slug]=biodiversidad`
-   - Respuesta incluye URLs de servicios OGC
-6. **Leaflet (navegador)** consume WMS del Servidor Geoespacial:
+   - Respuesta incluye URLs de servicios OGC del GeoServer
+6. **Leaflet (biblioteca del navegador)** hace peticiones HTTP a GeoServer:
    ```javascript
+   // Frontend hace petición HTTP al GeoServer, NO a la BD
    L.tileLayer.wms('http://gis.grrnga.gob.pe:8080/geoserver/siar/wms', {
      layers: 'siar:areas_protegidas',
      format: 'image/png',
      transparent: true
    }).addTo(map);
    ```
-7. **Usuario final** visualiza el mapa en tiempo real
+7. **GeoServer** consulta PostGIS, renderiza y devuelve PNG al navegador
+8. **Usuario final** visualiza el mapa en tiempo real en su navegador
 
 ##### GeoServer vs ArcGIS Server: Comparativa
 
