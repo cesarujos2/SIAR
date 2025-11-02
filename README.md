@@ -300,6 +300,8 @@ Contratar un servicio especializado para el diseño, desarrollo e implementació
 - Compilación y publicación de la Aplicación Móvil nativa (Android APK/AAB e iOS IPA)
 - Integración con el Servidor GIS On-Premise de la GRRNGA (para Geovisor)
 - **Arquitectura flexible** que permita el uso de tecnologías alternativas manteniendo la estructura arquitectónica
+- **Entrega del código fuente completo** con todos los derechos de propiedad intelectual para el Gobierno Regional de La Libertad
+- **Repositorio Git** con todo el código fuente de las aplicaciones (Portal Web y App Móvil) con historial completo de commits
 - Capacitación y transferencia tecnológica
 
 #### 2.2.4. Requisitos No Funcionales
@@ -1441,6 +1443,33 @@ Solo si hay presupuesto para desarrollo adicional:
 - **Git** (repositorio de código)
 - **Docker** (containerización recomendada pero no obligatoria)
 
+**Repositorio de Código Fuente:**
+
+**Propiedad del Código:**
+- **El código fuente completo será propiedad del Gobierno Regional de La Libertad**
+- Todos los derechos de propiedad intelectual del código desarrollado corresponden al Gobierno Regional de La Libertad
+- El proveedor debe entregar el código fuente completo sin restricciones de uso, modificación o distribución por parte del Gobierno Regional
+
+**Estructura del Repositorio:**
+- **Repositorio Git único o múltiples repositorios** (según arquitectura):
+  - Repositorio del Portal Web (Next.js/Nuxt.js)
+  - Repositorio de la App Móvil (React Native/Flutter)
+  - Repositorio del Backend CMS (Strapi u otro)
+  - Repositorio de configuración e infraestructura (opcional)
+- **Historial completo de commits** desde el inicio del desarrollo
+- **Branches organizadas** (main, develop, feature branches)
+- **Documentación en el repositorio:**
+  - README.md con instrucciones de instalación y configuración
+  - Documentación de arquitectura
+  - Guías de desarrollo
+  - Changelog
+
+**Entrega del Repositorio:**
+- Acceso completo al repositorio Git (GitHub, GitLab, Bitbucket u otro)
+- Credenciales de acceso para el equipo del Gobierno Regional
+- Transferencia de propiedad del repositorio al Gobierno Regional (si aplica)
+- Backup del repositorio completo en formato comprimido
+
 **Pipeline Básico:**
 1. Desarrollo local → Pruebas
 2. Deploy manual a Staging
@@ -1519,6 +1548,24 @@ Solo si hay presupuesto para desarrollo adicional:
 - Manuales en PDF
 - Videos tutoriales (opcional)
 - Acceso al código fuente documentado
+
+**Entregables de Código Fuente y Repositorio:**
+- **Repositorio Git completo** con todo el código fuente de:
+  - Portal Web
+  - Aplicación Móvil
+  - Backend CMS
+  - Configuraciones y scripts
+- **Documentación técnica del código:**
+  - Comentarios en el código
+  - Documentación de funciones y clases principales
+  - Guías de arquitectura
+- **Transferencia de propiedad:**
+  - Todos los derechos de propiedad intelectual del código desarrollado corresponden al Gobierno Regional de La Libertad
+  - Acceso completo y sin restricciones al repositorio
+  - Credenciales de acceso al repositorio
+- **Backup del código fuente:**
+  - Archivo comprimido del repositorio completo
+  - Versionamiento completo con historial de commits
 
 ##### Mantenimiento y Soporte Post-Implementación
 
