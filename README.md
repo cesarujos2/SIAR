@@ -26,9 +26,13 @@
   - [2.2.3. Alcance](#223-alcance)
   - [2.2.4. Requisitos No Funcionales](#224-requisitos-no-funcionales)
   - [2.2.5. Arquitectura y Stack Tecnológico](#225-arquitectura-y-stack-tecnológico)
+    - [Flexibilidad Tecnológica y Alternativas](#flexibilidad-tecnológica-y-alternativas)
   - [2.2.6. El Servidor Geoespacial](#226-el-servidor-geoespacial)
   - [2.2.7. Capa de Presentación - Frontend](#227-capa-de-presentación---frontend)
+    - [Portal Web de Consulta](#portal-web-de-consulta-aplicación-web-estándar)
+    - [Aplicación Móvil Colaborativa](#aplicación-móvil-colaborativa-producto-independiente)
   - [2.2.8. Capa de Aplicación - Backend CMS](#228-capa-de-aplicación---backend-cms)
+    - [API Pública Documentada para Uso Externo](#api-pública-documentada-para-uso-externo)
   - [2.2.9. Capa de Datos - Arquitectura Híbrida](#229-capa-de-datos---arquitectura-híbrida)
   - [2.2.10. Consideraciones de Despliegue y DevOps](#2210-consideraciones-de-despliegue-y-devops)
   - [2.2.11. Requisitos Funcionales](#2211-requisitos-funcionales)
@@ -280,16 +284,22 @@ Redactar los Términos de Referencia para el "Servicio de Desarrollo e Implement
 
 #### 2.2.2. Objeto
 
-Contratar un servicio especializado para el diseño, desarrollo e implementación de una plataforma digital ambiental regional de alto rendimiento, compuesta por un Portal Web (PWA con SSR) y una Aplicación Móvil funcional, operando bajo una arquitectura desacoplada y centrada en el usuario (Mobile First).
+Contratar un servicio especializado para el diseño, desarrollo e implementación de una plataforma digital ambiental regional de alto rendimiento, compuesta por un **Portal Web de consulta con SSR** para visualización y consumo de información ambiental, una **Aplicación Móvil colaborativa nativa multiplataforma** desarrollada como producto independiente (React Native u otra tecnología multiplataforma) que permite a usuarios aportar información desde el campo, y una API pública documentada para integraciones externas, operando bajo una arquitectura desacoplada y centrada en el usuario (Mobile First).
 
 #### 2.2.3. Alcance
 
 - Diseño UX/UI y Prototipado navegable con validación de usabilidad
 - Implementación del Headless CMS Strapi (Back-end) para la gestión de contenido
-- Desarrollo del Front-end (Next.js/Nuxt.js) con arquitectura SPA y SSR
+- Desarrollo del **Portal Web de consulta** (Next.js/Nuxt.js) con arquitectura SPA y SSR para visualización y consumo de información ambiental
+- **Desarrollo independiente de la Aplicación Móvil colaborativa** con tecnología multiplataforma (React Native u otra) como producto separado del portal web
+- **Sistema de cuentas y usuarios** para la aplicación móvil colaborativa
+- **Funcionalidades colaborativas en la App Móvil** que permitan a usuarios externos aportar información ambiental de la región desde el campo
+- **API pública documentada** con sistema de autenticación y autorización para uso externo (otras apps, instituciones, personas)
+- **Portal de documentación API** publicado en la web con solicitud de permisos de acceso
 - Despliegue y configuración de la infraestructura en la nube (Cloud)
-- Generación y publicación de la Aplicación Móvil (Android/iOS)
+- Compilación y publicación de la Aplicación Móvil nativa (Android APK/AAB e iOS IPA)
 - Integración con el Servidor GIS On-Premise de la GRRNGA (para Geovisor)
+- **Arquitectura flexible** que permita el uso de tecnologías alternativas manteniendo la estructura arquitectónica
 - Capacitación y transferencia tecnológica
 
 #### 2.2.4. Requisitos No Funcionales
@@ -297,9 +307,9 @@ Contratar un servicio especializado para el diseño, desarrollo e implementació
 | RNF | Especificación Mínima | Justificación y Criterio de Aceptación |
 | :---- | :---- | :---- |
 | **Arquitectura Front-end** | Single Page Application (SPA) con Server-Side Rendering (SSR). | Obligatorio el uso de un *framework* moderno (Next.js) para optimizar el SEO y el TTFB (Time To First Byte). |
-| **Mobile First Estricto** | Todo el diseño, maquetado y prototipado debe ser iniciado y validado para pantallas móviles antes que para escritorio. | Prioriza la accesibilidad ciudadana y el correcto despliegue en la App Móvil. |
-| **PWA (Optimización)** | Conversión total a Progressive Web App (PWA), incluyendo Service Workers para el almacenamiento en caché de activos (imágenes, mapas base) y funcionalidad *offline* parcial. | Rendimiento ultrarrápido y resiliencia ante baja conectividad de banda ancha en zonas rurales de La Libertad. |
-| **Performance (Lighthouse)** | El portal debe obtener un puntaje mínimo de 90/100 en las métricas de Performance y Accesibilidad de Google Lighthouse en dispositivos móviles. | Medida objetiva de optimización de código y tiempos de carga. |
+| **Mobile First Estricto** | Todo el diseño, maquetado y prototipado del portal web debe ser iniciado y validado para pantallas móviles antes que para escritorio. | Prioriza la accesibilidad ciudadana desde dispositivos móviles. |
+| **Performance (Lighthouse)** | El portal web debe obtener un puntaje mínimo de 90/100 en las métricas de Performance y Accesibilidad de Google Lighthouse en dispositivos móviles. | Medida objetiva de optimización de código y tiempos de carga. |
+| **Aplicación Móvil Independiente** | Desarrollo nativo multiplataforma (React Native u otra tecnología) como producto completamente separado del portal web. | La app móvil debe funcionar de manera independiente, con su propio ciclo de desarrollo y despliegue, compartiendo únicamente las APIs del backend. |
 | **Diseño UX/UI** | Desarrollo de un Sistema de Diseño (paleta, tipografía, componentes) y presentación de un Informe de Pruebas de Usabilidad con usuarios no técnicos de La Libertad. | Asegura la coherencia visual, la escalabilidad y una interfaz amigable y sencilla, contrarrestando la mala UX de plataformas estatales. |
 | **Seguridad** | Implementación de medidas de seguridad a nivel API (JWT/OAuth 2.0) y *Front-end* (manejo de *tokens*, protección contra XSS). | El CMS Strapi debe ser accesible sólo a través de la red interna (VPN) o con estricto control de acceso. |
 
@@ -311,20 +321,24 @@ La plataforma SIAR implementa una **arquitectura híbrida desacoplada** que comb
                         USUARIOS FINALES
                               │
                               ▼
-     ┌────────────────────────────────────────────────┐
-     │         CAPA DE PRESENTACIÓN (Cloud)           │
-     │  ┌─────────────────┐  ┌──────────────────┐     │
-     │  │  Portal Web PWA │  │  App Móvil       │     │
-     │  │  (Next.js)      │  │  (Capacitor)     │     │
-     │  └────┬──────┬─────┘  └────┬──────┬──────┘     │
-     └───────┼──────┼─────────────┼──────┼────────────┘
-             │      │             │      │
-             │      └────Build────┘      │
-             │                           │
-    REST/GraphQL (contenido)             │
-             │                           │ HTTP
-             ▼                           │ (servicios OGC:
-     ┌──────────────────────┐            │  WMS, WFS, WMTS)
+     ┌─────────────────────────────────────────────────┐
+     │      CAPA DE PRESENTACIÓN (Productos Separados) │
+     │  ┌─────────────────────┐  ┌──────────────────┐  │
+     │  │  Portal Web (SSR)   │  │  App Móvil       │  │
+     │  │  (Next.js/Nuxt.js)  │  │  Colaborativa    │  │
+     │  │  - Solo Consulta    │  │  (React Native / │  │
+     │  │                     │  │   Flutter / Otro)│  │
+     │  │  - Producto Web     │  │  - Colaboración  │  │
+     │  │    Independiente    │  │  - Producto      │  │
+     │  │                     │  │    Independiente │  │
+     │  └────┬────────────────┘  └───────┬──────────┘  │
+     └───────┼───────────────────────────┼─────────────┘
+             │                           │   
+    REST/GraphQL (contenido)             │   
+             │                           │    HTTP
+             │                           │    (servicios OGC:
+             ▼                           │    WMS, WFS, WMTS)
+     ┌──────────────────────┐            │     
      │  CAPA DE APLICACIÓN  │            │
      │      (Cloud)         │            │
      │  ┌────────────────┐  │            │
@@ -381,10 +395,134 @@ La plataforma SIAR implementa una **arquitectura híbrida desacoplada** que comb
      └─────────────────────────────────────────────┘
 
 FLUJO DE DATOS:
-1. Frontend → Strapi (REST API) → BD Cloud [contenido editorial]
-2. Frontend → GeoServer (OGC) → BD PostGIS On-Premise [mapas]
-3. BD PostGIS On-Premise → ETL → BD Cloud (public_data) [opcional]
+1. Portal Web → Strapi (REST API) → BD Cloud [contenido editorial]
+2. Portal Web → GeoServer (OGC) → BD PostGIS On-Premise [mapas]
+3. App Móvil → Strapi (REST API) → BD Cloud [contenido editorial]
+4. App Móvil → GeoServer (OGC) → BD PostGIS On-Premise [mapas]
+5. BD PostGIS On-Premise → ETL → BD Cloud (public_data) [opcional]
+
+NOTA: Portal Web y App Móvil son productos completamente separados, compartiendo únicamente las APIs del backend (Strapi y GeoServer).
 ```
+
+##### Flexibilidad Tecnológica y Alternativas
+
+**Principio de Flexibilidad Arquitectónica:**
+
+El arquitecto o jefe de proyecto de la empresa proveedora del servicio **puede elegir tecnologías alternativas** a las mencionadas en este documento, siempre y cuando se **respete la estructura y arquitectura** descrita. La arquitectura debe mantener sus principios fundamentales: desacoplamiento, escalabilidad, seguridad y cumplimiento de estándares.
+
+**Estructura Arquitectónica Obligatoria:**
+
+La siguiente estructura de capas y flujos debe mantenerse independientemente de las tecnologías elegidas:
+
+1. **Capa de Presentación** (Frontend)
+   - Separación clara entre Web y Móvil
+   - Arquitectura desacoplada del backend
+   - Comunicación mediante APIs REST/GraphQL estandarizadas
+
+2. **Capa de Aplicación** (Backend CMS)
+   - Headless CMS o Backend API
+   - Gestión de contenido y usuarios
+   - APIs públicas y protegidas
+
+3. **Capa de Datos**
+   - Separación Cloud (CMS) / On-Premise (GIS)
+   - Estándares de datos geoespaciales (OGC)
+   - Esquemas de base de datos definidos
+
+**Tecnologías Alternativas Permitidas:**
+
+**Frontend Web (Alternativas a Next.js):**
+- **Nuxt.js** (Vue.js) - SSR/SSG similar a Next.js
+- **Remix** (React) - Framework full-stack
+- **SvelteKit** (Svelte) - Framework moderno
+- **Angular Universal** (Angular) - SSR para Angular
+- **Astro** - Framework multi-framework
+- **Requirement:** Debe soportar SSR y Mobile First
+
+**Aplicación Móvil (Tecnologías Permitidas):**
+- **React Native** - Framework multiplataforma nativo (recomendado)
+- **Flutter** - Framework multiplataforma con Dart
+- **Xamarin/.NET MAUI** - Para equipos .NET
+- **Kotlin Multiplatform Mobile (KMM)** - Lógica compartida con UI nativa
+- **Requirement:** Debe ser tecnología multiplataforma nativa con renderizado nativo y acceso completo a APIs del dispositivo
+
+**Backend CMS (Alternativas a Strapi):**
+- **Directus** - Headless CMS con SQL
+- **Payload CMS** - TypeScript-first CMS
+- **Sanity** - Headless CMS con editor en tiempo real
+- **Contentful** (SaaS) - CMS gestionado
+- **WordPress Headless** (Headless WordPress)
+- **DatoCMS** (SaaS) - CMS moderno
+- **Requirement:** Debe soportar autenticación, roles, APIs REST/GraphQL, gestión de usuarios colaborativos
+
+**Base de Datos (Alternativas a PostgreSQL):**
+- **MySQL/MariaDB** con extensión espacial
+- **MongoDB** (para CMS, mantener PostGIS para GIS)
+- **CockroachDB** (PostgreSQL compatible)
+- **Requirement:** Para GIS On-Premise, mantener PostgreSQL/PostGIS (estándar)
+
+**Servidor Geoespacial (Alternativas a GeoServer):**
+- **MapServer** - Open source, más ligero
+- **ArcGIS Server** - Si ya existe licencia
+- **QGIS Server** - Basado en QGIS
+- **Requirement:** Debe exponer servicios OGC estándar (WMS, WFS, WMTS)
+
+**Librerías de Mapas (Alternativas a Leaflet/MapLibre):**
+- **OpenLayers** - Librería robusta para GIS web
+- **Cesium** - Para visualización 3D
+- **Google Maps API** / **Mapbox** - Si presupuesto lo permite
+- **Requirement:** Compatible con servicios OGC
+
+**Proceso de Aprobación de Alternativas:**
+
+1. **Propuesta Técnica:**
+   - La empresa proveedora debe presentar justificación técnica de tecnologías alternativas
+   - Comparativa con tecnologías sugeridas
+   - Análisis de impacto en mantenibilidad y escalabilidad
+
+2. **Criterios de Evaluación:**
+   - Cumplimiento de requisitos funcionales
+   - Compatibilidad con estándares (OGC, REST, OpenAPI)
+   - Rendimiento y escalabilidad equivalentes
+   - Facilidad de mantenimiento y transferencia de conocimiento
+   - Costos de licencias (si aplica)
+
+3. **Aprobación:**
+   - Revisión por parte de GRRNGA (Ingeniero Informático)
+   - Aprobación escrita antes de inicio de desarrollo
+   - Documentación de decisiones técnicas en el proyecto
+
+**Documentación Requerida para Alternativas:**
+
+- Diagrama de arquitectura actualizado con tecnologías elegidas
+- Justificación técnica de cada elección
+- Matriz de compatibilidad con requisitos
+- Plan de transferencia de conocimiento con tecnologías elegidas
+- Guías de instalación y configuración
+
+**Garantías y Compatibilidad:**
+
+Independientemente de las tecnologías elegidas, el sistema debe:
+- Mantener **interoperabilidad** con sistemas externos (SINIA, GeoPerú)
+- Cumplir con **estándares de seguridad** (OAuth 2.0, JWT, HTTPS)
+- Soportar **APIs públicas documentadas** (OpenAPI/Swagger)
+- Ser **escalable** para 1M+ visitas/año
+- Tener **documentación técnica completa** para mantenimiento
+
+**Ejemplo de Aplicación:**
+
+Si el arquitecto decide usar **Nuxt.js en lugar de Next.js**:
+- ✅ Debe mantener mismo resultado funcional (SSR, Mobile First)
+- ✅ Debe mantener APIs REST compatibles
+- ✅ Debe mantener arquitectura de capas separadas
+- ✅ Debe mantener soporte para servicios OGC
+- ✅ Debe mantener funcionalidades colaborativas y de API pública
+
+Si el arquitecto decide usar **Flutter en lugar de React Native** para la app móvil:
+- ✅ Debe ser framework multiplataforma nativo equivalente
+- ✅ Debe compartir APIs del backend con portal web
+- ✅ Debe ser producto independiente con código base separado del portal web
+- ✅ Debe tener renderizado nativo y acceso completo a APIs del dispositivo
 
 #### 2.2.6. El Servidor Geoespacial (GeoServer/ArcGIS Server)
 
@@ -397,7 +535,7 @@ El Servidor Geoespacial es el **intermediario esencial** que permite que el fron
 **Flujo correcto:**
 ```
 Frontend (Leaflet/MapLibre) 
-    → HTTP Request: http://geoserver.grrnga.gob.pe/wms?layer=anp&bbox=...
+    → HTTP Request: http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wms?layer=anp&bbox=...
         → GeoServer recibe petición
             → GeoServer consulta PostGIS: SELECT geom FROM anp WHERE ...
                 → GeoServer renderiza y transforma
@@ -452,10 +590,12 @@ Estos servicios HTTP son lo que el frontend (Leaflet/MapLibre) consume para most
 
 | Servicio | URL Ejemplo | Qué retorna | Consumido por |
 |----------|-------------|-------------|---------------|
-| **WMS** | `http://gis.grrnga.gob.pe:8080/geoserver/siar/wms?LAYERS=anp&...` | Imagen PNG del mapa | **Frontend Portal Web** (visualización) |
-| **WFS** | `http://gis.grrnga.gob.pe:8080/geoserver/siar/wfs?TYPENAME=cuencas&...` | GeoJSON con geometrías | **Frontend Portal Web** (descargas, análisis) |
-| **WMTS** | `http://gis.grrnga.gob.pe:8080/geoserver/gwc/service/wmts?layer=siar:basemap&...` | Tile PNG 256x256 | **App Móvil** (cache offline) |
-| **WCS** | `http://gis.grrnga.gob.pe:8080/geoserver/siar/wcs?COVERAGEID=dem&...` | GeoTIFF (raster) | **Frontend** (descargas especializadas) |
+| **WMS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wms?LAYERS=anp&...` | Imagen PNG del mapa | **Frontend Portal Web** (visualización) |
+| **WFS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wfs?TYPENAME=cuencas&...` | GeoJSON con geometrías | **Frontend Portal Web** (descargas, análisis) |
+| **WMTS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/gwc/service/wmts?layer=siar:basemap&...` | Tile PNG 256x256 | **App Móvil Nativa** (cache offline para modo sin conexión) |
+| **WCS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wcs?COVERAGEID=dem&...` | GeoTIFF (raster) | **Frontend** (descargas especializadas) |
+
+**Nota:** El dominio `gis.regionlalibertad.gob.pe` corresponde al dominio específico del Gobierno Regional de La Libertad para el servidor geoespacial. Este dominio debe configurarse según el dominio oficial del Gobierno Regional de La Libertad. GRRNGA = Gerencia Regional de Recursos Naturales y Gestión Ambiental.
 
 **IMPORTANTE:** El frontend SOLO hace peticiones HTTP a estos endpoints. Nunca ejecuta SQL ni se conecta directamente a PostgreSQL.
 
@@ -474,7 +614,8 @@ Estos servicios HTTP son lo que el frontend (Leaflet/MapLibre) consume para most
 - **Firewall:** Puerto 8080 (GeoServer) o 6080 (ArcGIS Server) abierto para:
   - Acceso interno: Red local GRRNGA (sin restricciones)
   - Acceso externo: Solo desde IPs del servicio cloud que aloja Strapi/Frontend
-- **DNS/NAT:** `gis.grrnga.gob.pe` redirige al servidor On-Premise
+- **DNS/NAT:** `gis.regionlalibertad.gob.pe` (o el dominio específico del Gobierno Regional de La Libertad) redirige al servidor On-Premise
+  - **Nota:** Este dominio debe ser el dominio oficial del Gobierno Regional de La Libertad. Debe configurarse según el dominio institucional disponible.
 
 **Requisitos de hardware (ya incluidos en especificaciones del Paquete 1):**
 - RAM: 16-32 GB dedicados (del total de 128 GB del servidor)
@@ -500,15 +641,15 @@ El frontend tiene **DOS conexiones independientes**:
    - Genera cache de tiles (opcional, para capas estáticas)
 4. **Editor GIS** registra metadatos en Strapi CMS:
    - Crea entrada en Content Type `GeoLayer`
-   - Campo `endpoints.wms`: `http://gis.grrnga.gob.pe:8080/.../wms`
-   - Campo `endpoints.wfs`: `http://gis.grrnga.gob.pe:8080/.../wfs`
+   - Campo `endpoints.wms`: `http://gis.regionlalibertad.gob.pe:8080/.../wms`
+   - Campo `endpoints.wfs`: `http://gis.regionlalibertad.gob.pe:8080/.../wfs`
 5. **Frontend (Next.js)** consulta Strapi API para obtener metadatos:
    - `GET /api/geo-layers?filters[theme][slug]=biodiversidad`
    - Respuesta incluye URLs de servicios OGC del GeoServer
 6. **Leaflet (biblioteca del navegador)** hace peticiones HTTP a GeoServer:
    ```javascript
    // Frontend hace petición HTTP al GeoServer, NO a la BD
-   L.tileLayer.wms('http://gis.grrnga.gob.pe:8080/geoserver/siar/wms', {
+   L.tileLayer.wms('http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wms', {
      layers: 'siar:areas_protegidas',
      format: 'image/png',
      transparent: true
@@ -538,67 +679,208 @@ El frontend tiene **DOS conexiones independientes**:
 
 #### 2.2.7. Capa de Presentación - Frontend
 
-##### Portal Web (Progressive Web App)
+##### Portal Web de Consulta (Aplicación Web Estándar)
+
+**El Portal Web es un producto independiente de solo consulta**, desarrollado como aplicación web estándar con SSR para visualización y consumo de información ambiental. **No incluye funcionalidades colaborativas** - estas están disponibles únicamente en la aplicación móvil.
+
+**Propósito:**
+- Visualización y consulta de información ambiental regional
+- Exploración de mapas geoespaciales interactivos
+- Consulta de indicadores, documentos, normas y estadísticas
+- Búsqueda y filtrado de información
+- Descarga de datos públicos
 
 **Framework y Tecnologías Core:**
-- **Next.js 14+** (App Router con Server Components)
+- **Next.js 14+** (App Router con Server Components) o **Nuxt.js** (Vue.js)
   - Server-Side Rendering (SSR) para SEO optimizado
   - Static Site Generation (SSG) para páginas estáticas
   - Incremental Static Regeneration (ISR) para contenido semi-dinámico
 - **TypeScript 5+** (Tipado estricto en todo el proyecto)
-- **React 18+** (Librería UI con Concurrent Features)
-
-**PWA Implementation:**
-- **Service Workers** (Workbox / next-pwa)
-  - Cache Strategy: Network First para datos dinámicos, Cache First para assets
-  - Offline Fallback Pages para contenido crítico
-  - Background Sync para formularios offline
-- **Web App Manifest** (manifest.json)
-  - Iconos adaptables (192x192, 512x512, maskable)
-  - Splash screens para Android/iOS
-  - Display mode: standalone
-  - Theme color y background color definidos
-- **IndexedDB** (Dexie.js)
-  - Almacenamiento local de capas base y datos consultados
-  - Sincronización con backend al recuperar conectividad
+- **React 18+** o **Vue.js 3+** (según framework elegido)
 
 **Librerías Geoespaciales:**
 - **Leaflet 1.9+** o **MapLibre GL JS 3+** (mapas base)
   - Soporte de tiles raster y vector
   - Control de capas dinámico
   - Integración con servicios WMS/WMTS
+  - Herramientas de consulta espacial y zoom
 - **Turf.js** (análisis espacial del lado del cliente)
 - **Proj4js** (transformaciones de coordenadas CRS)
 
 **UI/UX Libraries:**
 - **Tailwind CSS 3+** (Utility-first styling)
-- **Shadcn/ui** o **Radix UI** (componentes accesibles)
-- **React Hook Form + Zod** (formularios validados)
+- **Shadcn/ui** o **Radix UI** (componentes accesibles) o **Vuetify** (si se usa Vue)
 
 **Optimizaciones de Performance:**
 - Code Splitting automático por rutas
 - Lazy Loading de mapas y componentes pesados
 - Image Optimization (WebP/AVIF)
+- Caché HTTP estándar del navegador (sin Service Workers)
 
-##### Aplicación Móvil Multiplataforma (Wrapping)
+**Funcionalidades del Portal Web (Solo Consulta):**
+- Búsqueda avanzada de información (indicadores, documentos, normas)
+- Visualización de mapas interactivos con múltiples capas
+- Filtros por temática, ámbito territorial, fecha
+- Exportación de datos (CSV, Excel, JSON)
+- Generación de mapas estáticos para impresión
+- Descarga de documentos y publicaciones
+- Visualización de estadísticas y gráficos interactivos
 
-**Tecnología de Wrapping:**
-- **Capacitor 5+** (recomendado) o **Ionic Framework**
-  - Build del código web Next.js a WebView nativo
-  - Acceso a APIs nativas (Geolocation, Camera, File System, Network Status)
-  - Plugins: @capacitor/geolocation, @capacitor/filesystem, @capacitor/network
+##### Aplicación Móvil Colaborativa (Producto Independiente)
+
+**La aplicación móvil es un producto completamente separado del portal web**, desarrollada con tecnología multiplataforma nativa con enfoque colaborativo. **Es la única plataforma que permite a usuarios aportar información ambiental desde el campo**. No se genera a partir del portal web ni utiliza Capacitor o tecnologías híbridas basadas en WebView.
+
+**Propósito Colaborativo:**
+La app móvil está diseñada específicamente para permitir que ciudadanos, investigadores, instituciones y organizaciones aporten información ambiental de manera colaborativa directamente desde sus dispositivos móviles mientras están en campo, aprovechando sensores del celular (GPS, cámara, etc.).
+
+**Tecnología Principal Recomendada:**
+- **React Native** (Meta/Facebook) - Framework multiplataforma más popular
+  - Desarrollo con JavaScript/TypeScript
+  - Compilación nativa para Android e iOS
+  - Acceso completo a APIs nativas del dispositivo
+  - Comunidad grande y ecosistema robusto
+
+**Tecnologías Alternativas Permitidas (Arquitecto decide):**
+- **Flutter** (Google/Dart) - Framework multiplataforma de alto rendimiento
+- **Xamarin/.NET MAUI** (Microsoft) - Para equipos con experiencia .NET
+- **Kotlin Multiplatform Mobile (KMM)** - Para aplicaciones nativas con lógica compartida
+
+**Requisitos para la Tecnología Móvil:**
+- Debe ser tecnología multiplataforma nativa con renderizado nativo
+- Debe proporcionar acceso completo a APIs nativas del dispositivo (GPS, cámara, sensores)
+- Debe permitir compilación nativa para Android e iOS
+
+**Arquitectura de la App Móvil:**
+
+**Separación completa del Portal Web:**
+- Código base independiente (repositorio separado)
+- Ciclo de desarrollo independiente
+- Despliegue independiente a Play Store / App Store
+- Comparte únicamente las APIs del backend:
+  - Strapi REST API para contenido y autenticación
+  - GeoServer OGC para servicios geoespaciales
+  - API pública documentada
+
+**Stack Tecnológico Recomendado (React Native):**
+- **React Native 0.72+** con **TypeScript**
+- **React Navigation** (navegación)
+- **React Query / TanStack Query** (gestión de estado servidor)
+- **Zustand / Redux Toolkit** (gestión de estado local)
+- **React Hook Form + Zod** (formularios)
+- **React Native Maps** (integración de mapas nativos)
+- **React Native Camera** o **expo-camera** (acceso a cámara)
+- **React Native Geolocation** (GPS nativo)
+- **AsyncStorage / MMKV** (almacenamiento local)
+- **React Native Paper** o **NativeBase** (UI components)
+
+**Sistema de Usuarios y Autenticación:**
+
+**Tipos de Usuario en la App Móvil:**
+1. **Usuario Registrado** (contribuyente colaborativo)
+   - Registro con validación de email desde la app
+   - Perfil de usuario personalizable
+   - Contribución de datos ambientales (sujeto a moderación)
+   - Historial de contribuciones personales
+   - Sistema de reputación/badges
+
+2. **Usuario Verificado** (instituciones, investigadores)
+   - Verificación manual mediante documentación subida desde la app
+   - Mayor credibilidad en contribuciones
+   - Contribuciones con menor moderación
+   - Acceso a estadísticas de sus aportes
+
+3. **Editor Ambiental** (interno GRRNGA)
+   - Acceso desde app móvil para revisar contribuciones en campo
+   - Validación y aprobación de aportes colaborativos
+   - Moderación de contenido desde móvil
+
+**Funcionalidades Colaborativas en la App Móvil:**
+
+**Módulo de Contribuciones (Funcionalidad Principal):**
+
+1. **Formularios Colaborativos por Temática Ambiental:**
+   - **Reporte de Observaciones Ambientales:**
+     - Calidad del agua (transparencia, color, presencia de residuos)
+     - Calidad del aire (visibilidad, olores, contaminación visible)
+     - Estado de biodiversidad (presencia de especies, estado de ecosistemas)
+   - **Registro Fotográfico Geo-referenciado:**
+     - Fotos de especies, ecosistemas, amenazas ambientales
+     - Captura automática de coordenadas GPS
+     - Timestamp automático
+     - Descripción y etiquetas
+   - **Carga de Datos de Campo:**
+     - Mediciones ambientales (temperatura, pH, etc.)
+     - Series temporales desde campo
+     - Datos de monitoreo ciudadano
+   - **Reporte de Incidencias:**
+     - Vertimientos, deforestación, contaminación
+     - Ubicación precisa con GPS
+     - Evidencia fotográfica/videográfica
+   - **Registro de Especies:**
+     - Aves, flora, fauna observada
+     - Ubicación exacta
+     - Fotos y descripción
+
+2. **Características Técnicas de Contribuciones:**
+   - Captura automática de coordenadas GPS (alta precisión)
+   - Integración con cámara nativa para fotos/videos
+   - Selección de ubicación en mapa si GPS no disponible
+   - Modo offline: guardar contribuciones localmente y sincronizar después
+   - Validación de formularios antes de envío
+   - Preview de contribución antes de enviar
+
+3. **Sistema de Moderación:**
+   - Cola de revisión para contribuciones
+   - Workflow de aprobación multi-nivel
+   - Notificaciones push sobre estado de aportes
+   - Historial completo de cambios y versionado
+   - Feedback a contribuyentes sobre aprobación/rechazo
+
+4. **Reconocimiento y Participación:**
+   - Dashboard personal de contribuciones del usuario
+   - Ranking de colaboradores más activos
+   - Badges por número de aportes validados
+   - Certificados de participación (opcional, descargables)
+   - Créditos en publicaciones generadas con datos colaborativos
+
+**Requisitos Funcionales Móviles:**
+- **Gestión de cuentas de usuario** completa (registro, login, perfil)
+- **Autenticación** con JWT / OAuth 2.0
+- **Contribuciones colaborativas** como funcionalidad principal
+- Carga de fotografías/videos geo-referenciadas con cámara nativa
+- Captura automática de GPS de alta precisión
+- Modo offline completo: trabajar sin conexión, sincronizar después
+- Visualización de mapas con servicios OGC (WMS/WMTS)
+- Descarga de capas geoespaciales para uso offline
+- Notificaciones push sobre estado de contribuciones
 
 **Outputs Nativos:**
 - **Android APK/AAB** (API Level 26+, Android 8.0+) - **Prioritario**
+  - Compilación nativa desde código React Native
   - Firma con keystore para Play Store
   - Compatibilidad con 95%+ de dispositivos en Perú
 - **iOS IPA** (iOS 13+) - **Opcional fase 2**
+  - Compilación nativa desde código React Native
+  - Requiere cuenta de desarrollador Apple
   - Solo si el presupuesto lo permite
 
-**Características Móviles:**
-- Modo offline con caché de mapas base
-- Detección automática de conectividad
+**Características Móviles Específicas:**
+- Acceso completo a sensores nativos (GPS de alta precisión, cámara, acelerómetro)
+- Modo offline-first: funcionalidad completa sin conexión
+- Sincronización bidireccional al recuperar conectividad
+- Almacenamiento local de contribuciones pendientes
+- Push notifications nativas para notificaciones de moderación
 - Optimización de bundle size para datos móviles
+- Uso eficiente de batería para trabajo en campo prolongado
+
+**Diferencias Clave con Portal Web:**
+- **Portal Web:** Solo consulta y visualización de información
+- **App Móvil:** Funcionalidad colaborativa completa para aportar información desde el campo
+- **UI/UX nativa:** Interfaces que siguen las guías de diseño de Android/iOS
+- **Rendimiento:** Renderizado nativo, sin WebView
+- **Acceso a hardware:** GPS, cámara, sensores sin limitaciones
+- **Offline-first:** Funcionalidad completa sin conexión, ideal para trabajo en campo
+- **Notificaciones:** Push notifications nativas para mantener a usuarios informados
 
 #### 2.2.8. Capa de Aplicación - Backend CMS
 
@@ -658,6 +940,39 @@ El frontend tiene **DOS conexiones independientes**:
    - theme (relation), tags (array)
    - publishedAt
 
+7. **UserContribution** (Contribuciones Colaborativas)
+   - contributor (relation → User)
+   - contributionType (enum: Observation, Photo, DataSeries, GeoLayer, Suggestion)
+   - title, description, location (JSON coordinates)
+   - files (media: photos, videos, documents)
+   - theme (relation), scope (relation)
+   - status (enum: Pending, Approved, Rejected, Published)
+   - moderationNotes (text, solo para editores)
+   - metadata (JSON: fecha observación, condiciones ambientales, etc.)
+   - publishedAt, moderatedAt, moderatedBy (relation → User)
+   - votes/likes (count)
+
+8. **User** (Usuarios de la Plataforma)
+   - username, email, password (hashed)
+   - firstName, lastName, institution (optional)
+   - userType (enum: Public, Registered, Verified, Editor)
+   - verificationStatus (enum: Unverified, Pending, Verified)
+   - verificationDocuments (media, optional)
+   - profileImage (media)
+   - contributions (relation → UserContribution, one-to-many)
+   - reputationScore (integer)
+   - badges (array)
+   - apiTokens (relation → ApiToken, one-to-many)
+
+9. **ApiToken** (Tokens de API Externa)
+   - token (hashed), name, description
+   - user (relation → User)
+   - scopes (array: read, write, geo, etc.)
+   - rateLimit (integer: requests per minute)
+   - expiresAt (datetime, optional)
+   - lastUsedAt (datetime)
+   - isActive (boolean)
+
 **Single Types:**
 - **HomePage** (contenido de portada)
 - **SiteConfig** (configuración general del sitio)
@@ -674,11 +989,23 @@ El frontend tiene **DOS conexiones independientes**:
 - **strapi-plugin-seo** (opcional, metadatos SEO)
 
 **Roles y Permisos:**
-1. **Super Admin** - Control total
-2. **Editor Ambiental** - CRUD sobre Indicators, Documents, News, LegalNorms
-3. **Editor GIS** - CRUD sobre GeoLayers, actualización de endpoints
-4. **Editor Municipal** - CREATE/UPDATE limitado a su ámbito territorial
-5. **Viewer** - Solo lectura (API pública)
+
+**Roles para Portal Web (Solo Consulta):**
+1. **Visitante Público** - Solo lectura de información pública (sin autenticación)
+2. **Viewer Autenticado** - Lectura de información con posibilidad de guardar búsquedas/favoritos
+
+**Roles para App Móvil (Colaboración):**
+3. **Usuario Registrado** - CREATE de contribuciones colaborativas sujetas a moderación
+4. **Usuario Verificado** - CREATE de contribuciones con moderación reducida
+5. **Editor Ambiental** - Moderación y aprobación de contribuciones colaborativas desde móvil
+
+**Roles para Backend CMS (Gestión):**
+6. **Super Admin** - Control total del sistema
+7. **Editor Ambiental** - CRUD sobre Indicators, Documents, News, LegalNorms, moderación de contribuciones
+8. **Editor GIS** - CRUD sobre GeoLayers, actualización de endpoints
+9. **Editor Municipal** - CREATE/UPDATE limitado a su ámbito territorial
+
+**Nota:** Las contribuciones colaborativas solo se pueden realizar desde la aplicación móvil, no desde el portal web.
 
 **APIs Generadas:**
 - **REST API:** `/api/indicators`, `/api/documents`, etc.
@@ -696,6 +1023,153 @@ El frontend tiene **DOS conexiones independientes**:
 - **AWS:** EC2 + RDS PostgreSQL + S3
 - **Google Cloud:** Cloud Run + Cloud SQL + Cloud Storage (recomendado por facilidad)
 - **Railway/Render** (alternativas económicas para instituciones públicas)
+
+##### API Pública Documentada para Uso Externo
+
+**Objetivo:** Proporcionar acceso controlado y documentado a los datos del SIAR para desarrolladores externos, otras aplicaciones, instituciones y personas interesadas en integrar información ambiental regional.
+
+**Portal de Documentación API:**
+
+**Características del Portal:**
+- **URL pública:** `https://api.siar.regionlalibertad.gob.pe/docs` o `https://siar.regionlalibertad.gob.pe/api-docs`
+  - **Nota:** Estos dominios deben ser los dominios oficiales del Gobierno Regional de La Libertad. Deben configurarse según el dominio institucional disponible.
+- **Interfaz interactiva** tipo Swagger UI / OpenAPI / Redoc
+- **Documentación completa** de todos los endpoints disponibles
+- **Ejemplos de código** en múltiples lenguajes (JavaScript, Python, cURL)
+- **Try it out** (probador interactivo de endpoints)
+- **Sistema de solicitud de permisos** integrado
+
+**Endpoints de la API Pública:**
+
+**1. Endpoints Públicos (Sin Autenticación):**
+- `GET /api/public/indicators` - Listado de indicadores ambientales públicos
+- `GET /api/public/indicators/:id` - Detalle de indicador
+- `GET /api/public/documents` - Documentos públicos
+- `GET /api/public/norms` - Normas ambientales vigentes
+- `GET /api/public/geo-layers/catalog` - Catálogo de capas geoespaciales disponibles
+- `GET /api/public/statistics/theme/:slug` - Estadísticas por temática
+
+**2. Endpoints Protegidos (Requieren Autenticación):**
+- `GET /api/v1/indicators/full` - Indicadores con series temporales completas
+- `GET /api/v1/geo-layers/:id/data` - Descarga de datos geoespaciales (GeoJSON, Shapefile)
+- `POST /api/v1/contributions` - Envío de contribuciones colaborativas (requiere usuario registrado)
+- `GET /api/v1/user/contributions` - Historial de contribuciones del usuario autenticado
+- `GET /api/v1/geo-layers/query` - Consultas espaciales avanzadas (buffer, intersection)
+- `POST /api/v1/time-series/bulk` - Carga masiva de series temporales (requiere permisos especiales)
+
+**Sistema de Autenticación y Autorización:**
+
+**1. Registro de Aplicaciones/Desarrolladores:**
+- Formulario web para solicitar acceso a la API
+- Campos requeridos:
+  - Nombre de la aplicación/organización
+  - Tipo de uso (Aplicación móvil, Sistema institucional, Investigación, Otro)
+  - Descripción del propósito
+  - Información de contacto
+  - Términos y condiciones de uso
+- Proceso de revisión manual por parte de GRRNGA
+- Aprobación/Rechazo con notificación por email
+
+**2. Métodos de Autenticación:**
+
+**API Keys (Nivel Básico):**
+- Al aprobar solicitud, se genera API Key única
+- Incluida en header: `Authorization: Bearer <api_key>`
+- Scopes limitados: solo lectura de datos públicos
+- Rate limit: 1000 requests/día
+
+**OAuth 2.0 (Nivel Avanzado):**
+- Para aplicaciones que requieren permisos de escritura o acceso a datos sensibles
+- Flow: Authorization Code Grant
+- Scopes disponibles:
+  - `read:indicators` - Lectura de indicadores
+  - `read:geodata` - Lectura de datos geoespaciales
+  - `write:contributions` - Escritura de contribuciones colaborativas
+  - `read:full-series` - Acceso a series temporales completas
+- Refresh tokens con expiración configurable
+- Rate limit: según nivel de permisos (hasta 10,000 requests/día)
+
+**3. Control de Acceso y Seguridad:**
+
+**Rate Limiting:**
+- Por API Key/Token: límites configurables según nivel
+- Por IP: protección contra abuso (100 requests/minuto por IP)
+- Headers de respuesta indican límites: `X-RateLimit-Limit`, `X-RateLimit-Remaining`
+
+**CORS (Cross-Origin Resource Sharing):**
+- Configuración por dominio registrado
+- Solo dominios aprobados pueden hacer requests desde navegador
+- Headers CORS apropiados en todas las respuestas
+
+**Versionado:**
+- Versión actual: `/api/v1/`
+- Mantener versiones anteriores para compatibilidad
+- Documentación clara de cambios entre versiones
+
+**Validación y Sanitización:**
+- Validación estricta de parámetros de entrada
+- Sanitización de queries para prevenir SQL injection
+- Validación de coordenadas geográficas y rangos permitidos
+
+**Monitoreo y Auditoría:**
+- Logging de todas las peticiones API (timestamp, IP, endpoint, usuario)
+- Dashboard de métricas de uso por aplicación
+- Alertas de uso anormal o potencial abuso
+- Reportes mensuales de uso de API
+
+**Documentación Técnica:**
+
+**Formato OpenAPI 3.0:**
+- Especificación completa en formato YAML/JSON
+- Compatible con herramientas: Swagger UI, Postman, Insomnia
+- Auto-generación de clientes SDK en múltiples lenguajes
+
+**Secciones de Documentación:**
+1. **Introducción** - Descripción general, casos de uso
+2. **Autenticación** - Guía paso a paso para obtener credenciales
+3. **Endpoints** - Documentación detallada de cada endpoint:
+   - Método HTTP y URL
+   - Parámetros (query, path, body)
+   - Ejemplos de request/response
+   - Códigos de error posibles
+   - Rate limits específicos
+4. **Modelos de Datos** - Schemas JSON de todas las entidades
+5. **Ejemplos de Integración** - Casos de uso comunes
+6. **Changelog** - Historial de cambios en la API
+7. **Soporte** - Contacto para ayuda técnica
+
+**Ejemplo de Solicitud de Permisos:**
+
+Flujo en el portal de documentación:
+1. Usuario visita `/api-docs`
+2. Sección "Solicitar Acceso" → Formulario
+3. Envío de solicitud → Notificación a administradores GRRNGA
+4. Revisión manual (2-5 días hábiles)
+5. Aprobación → Generación automática de API Key
+6. Email con credenciales y guía de inicio rápido
+7. Acceso inmediato a endpoints públicos
+8. Solicitud de permisos adicionales si requiere endpoints protegidos
+
+**Casos de Uso de la API Externa:**
+
+1. **Aplicaciones Móviles de Terceros:**
+   - Integración de mapas ambientales en apps turísticas
+   - Alertas de calidad del aire en apps meteorológicas
+
+2. **Sistemas Institucionales:**
+   - Municipalidades integrando datos ambientales en sus portales
+   - Universidades para proyectos de investigación
+   - ONGs para monitoreo ambiental
+
+3. **Plataformas de Análisis:**
+   - Dashboards de Business Intelligence
+   - Herramientas de visualización de datos (Tableau, Power BI)
+   - Scripts de análisis estadístico (Python, R)
+
+4. **Servicios Web:**
+   - Mashups con otras fuentes de datos
+   - Servicios de notificación automática
+   - Webhooks para integraciones en tiempo real
 
 #### 2.2.9. Capa de Datos - Arquitectura Híbrida
 
@@ -802,8 +1276,8 @@ CREATE SCHEMA gis_temp;
 
 **Endpoints Ejemplo:**
 ```
-http://gis.grrnga.local:8080/geoserver/siar/wms
-http://gis.grrnga.local:8080/geoserver/siar/wfs
+http://gis.regionlalibertad.local:8080/geoserver/siar/wms
+http://gis.regionlalibertad.local:8080/geoserver/siar/wfs
 ```
 
 ##### Flujo de Datos y Sincronización ETL
@@ -953,13 +1427,13 @@ Solo si hay presupuesto para desarrollo adicional:
    - Replica exacta de producción
    - Datos anonimizados de producción
    - Testing pre-deployment
-   - URL: `staging.siar.grrnga.gob.pe`
+   - URL: `staging.siar.regionlalibertad.gob.pe`
 
 3. **Production (Cloud + On-Premise)**
    - Ambiente de producción final
    - Alta disponibilidad configurada
    - Monitoreo 24/7
-   - URL: `siar.grrnga.gob.pe`
+   - URL: `siar.regionlalibertad.gob.pe`
 
 ##### CI/CD Pipeline
 
