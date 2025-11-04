@@ -137,17 +137,17 @@ Necesario para la impresión de mapas, planos y cartografía ambiental:
 
 #### 1.1.3. Especificaciones del Servidor
 
-Propuesta técnica del Servidor GIS, Web Backend y Bases de Datos:
+Propuesta técnica del Servidor para Bases de Datos:
 
 | Componente | Especificación Técnica Detallada | Justificación Técnica |
 | :---- | :---- | :---- |
 | **Factor de Forma** | Rackeable 1U/2U | Optimización de espacio en el ambiente acondicionado de 57.84 m² y mejor ventilación. |
-| **Procesador (CPU)** | 1x Intel Xeon Silver de 16 Cores o 2x AMD EPYC (2.5 GHz o superior) | Capacidad de procesamiento para Bases de Datos (PostgreSQL/PostGIS) y servicios web concurrentes (GeoServer). |
+| **Procesador (CPU)** | 1x Intel Xeon Silver de 16 Cores o 2x AMD EPYC (2.5 GHz o superior) | Capacidad de procesamiento para Bases de Datos (PostgreSQL/PostGIS) y servicios concurrentes. |
 | **Memoria RAM** | 128 GB ECC DDR4 (Expandible a 256 GB) | Requerido para la indexación y *caching* de grandes volúmenes de datos espaciales. |
 | **Almacenamiento (Discos)** | **Discos Primarios (OS/PostgreSQL):** 2x 960 GB SSD NVMe (RAID 1)<br>**Discos Secundarios (Data GIS):** 4x 4TB SAS HDD 10K RPM (RAID 5 o RAID 6) | Separación de la Base de Datos y el Sistema Operativo, con alta redundancia y velocidad de acceso para la data GIS. |
 | **Controladora RAID** | Hardware RAID con batería de respaldo (BBU) | Protección crítica contra pérdida de datos por fallo eléctrico o de disco. |
 | **Tarjeta de Red** | 2x Puertos Ethernet 1GbE o 1x 10GbE | Conectividad de alta velocidad para la red interna de la GRRNGA. |
-| **Sistema Operativo** | Ubuntu Server 22.04 LTS (Linux - Open Source) | Sistema operativo open source recomendado para optimización de costos. Compatible con PostgreSQL/PostGIS, GeoServer y toda la stack open source. Excelente rendimiento y estabilidad para servidores de bases de datos y servicios web. |
+| **Sistema Operativo** | Ubuntu Server 22.04 LTS (Linux - Open Source) | Sistema operativo open source recomendado para optimización de costos. Compatible con PostgreSQL/PostGIS y toda la stack open source. Excelente rendimiento y estabilidad para servidores de bases de datos. |
 
 ### 1.2. Coordinación con Ingeniero Civil
 
@@ -158,11 +158,9 @@ Propuesta técnica del Servidor GIS, Web Backend y Bases de Datos:
 | Tipo de Software | Nombre y Versión Sugerida | Especificación de Licencia (Relevancia para SIAR) | Und. | Cant. |
 | :---- | :---- | :---- | :---- | :---- |
 | **GIS Profesional (Geoprocesamiento)** | **ArcGIS Pro** (Última versión LTS o equivalente) | Licencia Standard o Advanced por usuario nominal. Incluye extensiones clave (Spatial Analyst, 3D Analyst) para el modelamiento ambiental. | Und. | 3 |
-| **GIS de Servidor (Publicación Web)** | **GeoServer** (Open Source - Gratuito) | Servidor geoespacial open source para publicar servicios web de mapas y datos (WMS/WFS/WMTS) y alimentar el Portal Web del SIAR. No requiere licencia. | Und. | 1 |
 | **Diseño Asistido por Computadora (CAD)** | **AutoCAD** (Última versión) | Licencia por usuario nominal. Esencial para la revisión de planos de uso de suelo, proyectos de infraestructura y cartografía base. | Und. | 3 |
 | **Software de Productividad** | **Microsoft Office 365** o **Microsoft Office Pro** | Licencia Estándar/Pro Plus por usuario. Incluye Word, Excel (vital para datos estadísticos), PowerPoint y Outlook. | Und. | 3 |
-| **S.O. del Servidor** | **Ubuntu Server 22.04 LTS** (Open Source - Gratuito) | Sistema operativo Linux recomendado para optimización de costos. Compatible con PostgreSQL/PostGIS, GeoServer y toda la stack open source. Soporte LTS hasta 2027. | Und. | 1 |
-| **Bases de Datos** | **PostgreSQL/PostGIS** | PostgreSQL/PostGIS, que es Open Source y no requiere licencia. | Und. | 1 |
+| **S.O. del Servidor** | **Ubuntu Server 22.04 LTS** (Open Source - Gratuito) | Sistema operativo Linux recomendado para optimización de costos. Compatible con PostgreSQL/PostGIS y toda la stack open source. Soporte LTS hasta 2027. | Und. | 1 |
 
 ### 1.4. Obtención de cotizaciones
 
@@ -379,8 +377,8 @@ La plataforma SIAR implementa una **arquitectura híbrida desacoplada** que comb
      │                                   ▼         │
      │         ┌───────────────────────────────┐   │
      │         │  SERVIDOR GEOESPACIAL         │   │
-     │         │  GeoServer (Open Source)     │   │
-     │         │  Puerto: 8080                │   │
+     │         │  GeoServer (Open Source)      │   │
+     │         │  Puerto: 8080                 │   │
      │         │                               │   │
      │         │  Expone servicios OGC:        │   │
      │         │  • WMS (mapas imagen)         │   │
