@@ -28,7 +28,7 @@
     - [Vista General de la Arquitectura](#vista-general-de-la-arquitectura)
     - [Flexibilidad Tecnológica y Alternativas](#flexibilidad-tecnológica-y-alternativas)
   - [2.2.5. Componentes del Sistema por Capas](#225-componentes-del-sistema-por-capas)
-    - [Servidor Geoespacial](#servidor-geoespacial-geoserverarcgis-server)
+    - [Servidor Geoespacial](#servidor-geoespacial-geoserver)
     - [Capa de Presentación - Frontend](#capa-de-presentación---frontend)
       - [Portal Web de Consulta](#portal-web-de-consulta-aplicación-web-estándar)
       - [Aplicación Móvil Colaborativa](#aplicación-móvil-colaborativa-producto-independiente)
@@ -142,12 +142,12 @@ Propuesta técnica del Servidor GIS, Web Backend y Bases de Datos:
 | Componente | Especificación Técnica Detallada | Justificación Técnica |
 | :---- | :---- | :---- |
 | **Factor de Forma** | Rackeable 1U/2U | Optimización de espacio en el ambiente acondicionado de 57.84 m² y mejor ventilación. |
-| **Procesador (CPU)** | 1x Intel Xeon Silver de 16 Cores o 2x AMD EPYC (2.5 GHz o superior) | Capacidad de procesamiento para Bases de Datos (SQL Server/PostgreSQL/PostGIS) y servicios web concurrentes. |
+| **Procesador (CPU)** | 1x Intel Xeon Silver de 16 Cores o 2x AMD EPYC (2.5 GHz o superior) | Capacidad de procesamiento para Bases de Datos (PostgreSQL/PostGIS) y servicios web concurrentes (GeoServer). |
 | **Memoria RAM** | 128 GB ECC DDR4 (Expandible a 256 GB) | Requerido para la indexación y *caching* de grandes volúmenes de datos espaciales. |
-| **Almacenamiento (Discos)** | **Discos Primarios (OS/SQL):** 2x 960 GB SSD NVMe (RAID 1)<br>**Discos Secundarios (Data GIS):** 4x 4TB SAS HDD 10K RPM (RAID 5 o RAID 6) | Separación de la Base de Datos y el Sistema Operativo, con alta redundancia y velocidad de acceso para la data GIS. |
+| **Almacenamiento (Discos)** | **Discos Primarios (OS/PostgreSQL):** 2x 960 GB SSD NVMe (RAID 1)<br>**Discos Secundarios (Data GIS):** 4x 4TB SAS HDD 10K RPM (RAID 5 o RAID 6) | Separación de la Base de Datos y el Sistema Operativo, con alta redundancia y velocidad de acceso para la data GIS. |
 | **Controladora RAID** | Hardware RAID con batería de respaldo (BBU) | Protección crítica contra pérdida de datos por fallo eléctrico o de disco. |
 | **Tarjeta de Red** | 2x Puertos Ethernet 1GbE o 1x 10GbE | Conectividad de alta velocidad para la red interna de la GRRNGA. |
-| **Sistema Operativo** | Windows Server 2022 Standard o Linux Server (Ubuntu/Red Hat) | Se recomienda Windows Server 2022 Standard para compatibilidad nativa con software GIS de ESRI (si es el caso) y bases de datos. |
+| **Sistema Operativo** | Ubuntu Server 22.04 LTS (Linux - Open Source) | Sistema operativo open source recomendado para optimización de costos. Compatible con PostgreSQL/PostGIS, GeoServer y toda la stack open source. Excelente rendimiento y estabilidad para servidores de bases de datos y servicios web. |
 
 ### 1.2. Coordinación con Ingeniero Civil
 
@@ -158,15 +158,15 @@ Propuesta técnica del Servidor GIS, Web Backend y Bases de Datos:
 | Tipo de Software | Nombre y Versión Sugerida | Especificación de Licencia (Relevancia para SIAR) | Und. | Cant. |
 | :---- | :---- | :---- | :---- | :---- |
 | **GIS Profesional (Geoprocesamiento)** | **ArcGIS Pro** (Última versión LTS o equivalente) | Licencia Standard o Advanced por usuario nominal. Incluye extensiones clave (Spatial Analyst, 3D Analyst) para el modelamiento ambiental. | Und. | 3 |
-| **GIS de Servidor (Publicación Web)** | **ArcGIS Enterprise** (Standard o superior) | Licencia de Servidor (Base Deployment) para publicar servicios web de mapas y datos, y alimentar el Portal Web del SIAR. | Und. | 1 |
-| **Diseño Asistido por Computadora (CAD)** | **AutoCAD** (Última versión) | Licencia por usuario nominal. Esencial para la revisión de planos de uso de suelo, proyectos de infraestructura y cartografía base. | Und. | 1 |
-| **Software de Productividad** | **Microsoft Office 365** o **Microsoft Office Pro** | Licencia Estándar/Pro Plus por usuario. Incluye Word, Excel (vital para datos estadísticos), PowerPoint y Outlook. | Und. | 4 |
-| **S.O. del Servidor** | **Windows Server Standard** (Última versión) | Licencia de Servidor con 16 núcleos base. Requerida para la instalación del Servidor Físico (On-Premise) y alojar ArcGIS Enterprise y Bases de Datos. | Und. | 1 |
+| **GIS de Servidor (Publicación Web)** | **GeoServer** (Open Source - Gratuito) | Servidor geoespacial open source para publicar servicios web de mapas y datos (WMS/WFS/WMTS) y alimentar el Portal Web del SIAR. No requiere licencia. | Und. | 1 |
+| **Diseño Asistido por Computadora (CAD)** | **AutoCAD** (Última versión) | Licencia por usuario nominal. Esencial para la revisión de planos de uso de suelo, proyectos de infraestructura y cartografía base. | Und. | 3 |
+| **Software de Productividad** | **Microsoft Office 365** o **Microsoft Office Pro** | Licencia Estándar/Pro Plus por usuario. Incluye Word, Excel (vital para datos estadísticos), PowerPoint y Outlook. | Und. | 3 |
+| **S.O. del Servidor** | **Ubuntu Server 22.04 LTS** (Open Source - Gratuito) | Sistema operativo Linux recomendado para optimización de costos. Compatible con PostgreSQL/PostGIS, GeoServer y toda la stack open source. Soporte LTS hasta 2027. | Und. | 1 |
 | **Bases de Datos** | **PostgreSQL/PostGIS** | PostgreSQL/PostGIS, que es Open Source y no requiere licencia. | Und. | 1 |
 
 ### 1.4. Obtención de cotizaciones
 
-Obtener 2 cotizaciones para todo el hardware y software. Utilizar la cotización de TELEMATICA S.A. como una de las referencias para ArcGIS.
+Obtener 2 cotizaciones para todo el hardware y software. Para software GIS comercial (ArcGIS Pro, AutoCAD), se puede utilizar la cotización de TELEMATICA S.A. como una de las referencias.
 
 ### 1.5. Presupuesto detallado
 
@@ -379,8 +379,8 @@ La plataforma SIAR implementa una **arquitectura híbrida desacoplada** que comb
      │                                   ▼         │
      │         ┌───────────────────────────────┐   │
      │         │  SERVIDOR GEOESPACIAL         │   │
-     │         │  GeoServer / ArcGIS Server    │   │
-     │         │  Puerto: 8080 / 6080          │   │
+     │         │  GeoServer (Open Source)     │   │
+     │         │  Puerto: 8080                │   │
      │         │                               │   │
      │         │  Expone servicios OGC:        │   │
      │         │  • WMS (mapas imagen)         │   │
@@ -475,11 +475,10 @@ La siguiente estructura de capas y flujos debe mantenerse independientemente de 
 - **CockroachDB** (PostgreSQL compatible)
 - **Requirement:** Para GIS On-Premise, mantener PostgreSQL/PostGIS (estándar)
 
-**Servidor Geoespacial (Alternativas a GeoServer):**
-- **MapServer** - Open source, más ligero
-- **ArcGIS Server** - Si ya existe licencia
-- **QGIS Server** - Basado en QGIS
-- **Requirement:** Debe exponer servicios OGC estándar (WMS, WFS, WMTS)
+**Servidor Geoespacial (Alternativas a GeoServer - todas Open Source):**
+- **MapServer** - Open source, más ligero que GeoServer
+- **QGIS Server** - Basado en QGIS, open source
+- **Requirement:** Debe exponer servicios OGC estándar (WMS, WFS, WMTS), debe ser open source
 
 **Librerías de Mapas (Alternativas a Leaflet/MapLibre):**
 - **OpenLayers** - Librería robusta para GIS web
@@ -540,7 +539,7 @@ Si el arquitecto decide usar **Flutter en lugar de React Native** para la app m�
 
 #### 2.2.5. Componentes del Sistema por Capas
 
-##### Servidor Geoespacial (GeoServer/ArcGIS Server)
+##### Servidor Geoespacial (GeoServer)
 
 El Servidor Geoespacial es el **intermediario esencial** que permite que el frontend (Portal Web y App Móvil) consuma los datos geográficos de forma segura y optimizada.
 
@@ -627,7 +626,7 @@ Estos servicios HTTP son lo que el frontend (Leaflet/MapLibre) consume para most
 
 **Configuración de red:**
 - **IP interna:** 192.168.X.X (red local GRRNGA)
-- **Firewall:** Puerto 8080 (GeoServer) o 6080 (ArcGIS Server) abierto para:
+- **Firewall:** Puerto 8080 (GeoServer) abierto para:
   - Acceso interno: Red local GRRNGA (sin restricciones)
   - Acceso externo: Solo desde IPs del servicio cloud que aloja Strapi/Frontend
 - **DNS/NAT:** `gis.regionlalibertad.gob.pe` (o el dominio específico del Gobierno Regional de La Libertad) redirige al servidor On-Premise
@@ -674,24 +673,26 @@ El frontend tiene **DOS conexiones independientes**:
 7. **GeoServer** consulta PostGIS, renderiza y devuelve PNG al navegador
 8. **Usuario final** visualiza el mapa en tiempo real en su navegador
 
-##### GeoServer vs ArcGIS Server: Comparativa
+**Decisión Tecnológica - GeoServer (Open Source):**
 
-| Criterio | GeoServer | ArcGIS Server |
-|----------|-----------|---------------|
-| **Licencia** | Open Source (GPL) - **Gratuito** | Comercial - **$12,000+ USD/año** |
-| **Instalación** | Java (JRE 11+), standalone o Tomcat | Requiere Windows Server + ArcGIS Enterprise |
-| **Compatibilidad PostGIS** | Nativa y optimizada | Requiere configuración adicional |
-| **Performance** | Excelente con configuración correcta | Superior con datasets masivos (>10M features) |
-| **Formatos soportados** | 50+ formatos (Shapefile, GeoTIFF, MBTiles, etc.) | Todos los formatos GIS |
-| **Curva de aprendizaje** | Media (interfaz web intuitiva) | Alta (requiere conocimiento ESRI) |
-| **Comunidad** | Grande (OSGeo Foundation) | Soporte comercial ESRI |
-| **Recomendación SIAR** | **Recomendado** (costo $0, suficiente para la escala del proyecto) | Solo si ya tienen licencias ArcGIS Enterprise |
+Se utiliza **GeoServer** como servidor geoespacial para el proyecto SIAR debido a:
 
-**Decisión:** Se recomienda **GeoServer** para el proyecto SIAR debido a:
-- Costo cero en licencias (presupuesto optimizado)
-- Integración perfecta con PostgreSQL/PostGIS (stack open source completo)
-- Comunidad activa y documentación extensa
-- Escalabilidad suficiente para 1M+ visitas/año del portal
+**Ventajas:**
+- **Costo cero en licencias** - Optimización del presupuesto
+- **Open Source (GPL)** - Sin restricciones de uso
+- **Integración perfecta** con PostgreSQL/PostGIS (stack open source completo)
+- **Compatibilidad nativa** con PostGIS - Sin configuración adicional compleja
+- **Formatos soportados** - 50+ formatos (Shapefile, GeoTIFF, MBTiles, etc.)
+- **Comunidad activa** - OSGeo Foundation con documentación extensa
+- **Performance excelente** con configuración correcta para la escala del proyecto
+- **Escalabilidad suficiente** para 1M+ visitas/año del portal
+- **Instalación simple** - Java (JRE 11+), standalone o Tomcat
+- **Interfaz web intuitiva** - Curva de aprendizaje media
+
+**Requisitos de Instalación:**
+- Java Runtime Environment (JRE 11+) o Java Development Kit (JDK 11+)
+- Puede ejecutarse standalone o sobre servidor de aplicaciones (Tomcat, Jetty)
+- Compatible con sistemas operativos Linux (recomendado) y Windows
 
 ##### Capa de Presentación - Frontend
 
@@ -1248,7 +1249,7 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm; -- búsqueda full-text
 **Infraestructura:**
 - Instalada en el Servidor Físico especificado en Paquete 1
 - PostgreSQL 15+ / PostGIS 3.3+
-- Windows Server 2022 o Linux (Ubuntu Server 22.04 LTS recomendado)
+- Ubuntu Server 22.04 LTS (Linux - Open Source, recomendado) o otra distribución Linux Server
 
 **Hardware Asignado:**
 - Discos SSD NVMe (RAID 1) para el motor de BD
@@ -1281,8 +1282,8 @@ CREATE SCHEMA gis_master;
 CREATE SCHEMA gis_temp;
 ```
 
-**Servicios Geoespaciales (GeoServer/ArcGIS Server):**
-- **GeoServer 2.24+** (Open Source, recomendado) o **ArcGIS Server**
+**Servicios Geoespaciales:**
+- **GeoServer 2.24+** (Open Source - Gratuito, recomendado)
 - Conectado a PostgreSQL/PostGIS local
 - Publica servicios OGC:
   - **WMS** (Web Map Service) - visualización
