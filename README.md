@@ -28,18 +28,35 @@
     - [Vista General de la Arquitectura](#vista-general-de-la-arquitectura)
     - [Flexibilidad Tecnológica y Alternativas](#flexibilidad-tecnológica-y-alternativas)
   - [2.2.5. Componentes del Sistema por Capas](#225-componentes-del-sistema-por-capas)
+    - [Servidor Geoespacial](#servidor-geoespacial-geoserverarcgis-server)
     - [Capa de Presentación - Frontend](#capa-de-presentación---frontend)
       - [Portal Web de Consulta](#portal-web-de-consulta-aplicación-web-estándar)
       - [Aplicación Móvil Colaborativa](#aplicación-móvil-colaborativa-producto-independiente)
     - [Capa de Aplicación - Backend CMS](#capa-de-aplicación---backend-cms)
+      - [Strapi Headless CMS](#strapi-headless-cms)
       - [API Pública Documentada para Uso Externo](#api-pública-documentada-para-uso-externo)
     - [Capa de Datos - Arquitectura Híbrida](#capa-de-datos---arquitectura-híbrida)
-    - [Servidor Geoespacial](#servidor-geoespacial)
+      - [Base de Datos en la Nube](#base-de-datos-en-la-nube-postgresqlpostgis-managed)
+      - [Base de Datos On-Premise](#base-de-datos-on-premise-postgresqlpostgis-local)
+      - [Flujo de Datos y Sincronización ETL](#flujo-de-datos-y-sincronización-etl)
+      - [Gestión de Archivos GIS](#gestión-de-archivos-gis---pipeline-de-carga-usuario-gis)
+      - [Seguridad y Acceso](#seguridad-y-acceso)
   - [2.2.6. Requisitos](#226-requisitos)
-    - [Requisitos No Funcionales](#requisitos-no-funcionales)
-    - [Requisitos Funcionales](#requisitos-funcionales)
+    - [Portal Web de Consulta](#portal-web-de-consulta)
+      - [Requisitos No Funcionales del Portal Web](#requisitos-no-funcionales-del-portal-web)
+      - [Requisitos Funcionales del Portal Web](#requisitos-funcionales-del-portal-web)
+    - [Aplicación Móvil Colaborativa](#aplicación-móvil-colaborativa)
+      - [Requisitos No Funcionales de la App Móvil](#requisitos-no-funcionales-de-la-app-móvil)
+      - [Requisitos Funcionales de la App Móvil](#requisitos-funcionales-de-la-app-móvil)
   - [2.2.7. Despliegue y DevOps](#227-despliegue-y-devops)
+    - [Entornos de Desarrollo](#entornos-de-desarrollo)
+    - [CI/CD Pipeline](#cicd-pipeline)
+    - [Monitoreo](#monitoreo)
+    - [Backups y Recuperación ante Desastres](#backups-y-recuperación-ante-desastres)
   - [2.2.8. Entregables y Transferencia de Conocimiento](#228-entregables-y-transferencia-de-conocimiento)
+    - [Documentación Técnica Requerida](#documentación-técnica-requerida)
+    - [Transferencia de Conocimiento](#transferencia-de-conocimiento)
+    - [Mantenimiento y Soporte Post-Implementación](#mantenimiento-y-soporte-post-implementación)
 - [2.3. Identificación de proveedores](#23-identificación-de-proveedores)
 - [2.4. Presupuesto detallado](#24-presupuesto-detallado)
 
@@ -1413,63 +1430,340 @@ Solo si hay presupuesto para desarrollo adicional:
 
 #### 2.2.6. Requisitos
 
-##### Requisitos No Funcionales
+##### Portal Web de Consulta
+
+**Requisitos No Funcionales del Portal Web:**
 
 | RNF | Especificación Mínima | Justificación y Criterio de Aceptación |
 | :---- | :---- | :---- |
-| **Arquitectura Front-end** | Single Page Application (SPA) con Server-Side Rendering (SSR). | Obligatorio el uso de un *framework* moderno (Next.js) para optimizar el SEO y el TTFB (Time To First Byte). |
+| **Arquitectura Front-end** | Single Page Application (SPA) con Server-Side Rendering (SSR). | Obligatorio el uso de un *framework* moderno (Next.js/Nuxt.js) para optimizar el SEO y el TTFB (Time To First Byte). |
 | **Mobile First Estricto** | Todo el diseño, maquetado y prototipado del portal web debe ser iniciado y validado para pantallas móviles antes que para escritorio. | Prioriza la accesibilidad ciudadana desde dispositivos móviles. |
 | **Performance (Lighthouse)** | El portal web debe obtener un puntaje mínimo de 90/100 en las métricas de Performance y Accesibilidad de Google Lighthouse en dispositivos móviles. | Medida objetiva de optimización de código y tiempos de carga. |
-| **Aplicación Móvil Independiente** | Desarrollo nativo multiplataforma (React Native u otra tecnología) como producto completamente separado del portal web. | La app móvil debe funcionar de manera independiente, con su propio ciclo de desarrollo y despliegue, compartiendo únicamente las APIs del backend. |
 | **Diseño UX/UI** | Desarrollo de un Sistema de Diseño (paleta, tipografía, componentes) y presentación de un Informe de Pruebas de Usabilidad con usuarios no técnicos de La Libertad. | Asegura la coherencia visual, la escalabilidad y una interfaz amigable y sencilla, contrarrestando la mala UX de plataformas estatales. |
 | **Seguridad** | Implementación de medidas de seguridad a nivel API (JWT/OAuth 2.0) y *Front-end* (manejo de *tokens*, protección contra XSS). | El CMS Strapi debe ser accesible sólo a través de la red interna (VPN) o con estricto control de acceso. |
+| **Accesibilidad Web** | Cumplimiento con WCAG 2.1 nivel AA mínimo. | Garantiza acceso a personas con discapacidades. |
+| **SEO** | Optimización para motores de búsqueda (meta tags, structured data, sitemap). | Mayor visibilidad del contenido ambiental en búsquedas. |
 
-##### Requisitos Funcionales
+**Requisitos Funcionales del Portal Web:**
 
-**Módulos Principales Confirmados:**
+Basados en la coordinación con el Ingeniero Ambiental (Sección 2.1), el Portal Web debe implementar los siguientes módulos y funcionalidades:
 
-1. **Módulo de Estadísticas e Indicadores**
-   - Visualización de series temporales con gráficos interactivos
-   - Filtros por temática, ámbito territorial y período
-   - Exportación de datos (CSV, Excel, JSON)
-   - Comparativas entre distritos/provincias
+**1. Estructura de Navegación Principal (Según 2.1.1):**
 
-2. **Módulo de Documentos y Publicaciones**
-   - Buscador avanzado con filtros multiples
-   - Visualizador de PDFs integrado
-   - Sistema de etiquetado y categorización
-   - Descarga y compartir en redes sociales
+- **Módulo de Actualidad:**
+  - Visualización de novedades y contenidos destacados
+  - Galería de imágenes
+  - Videos embebidos
+  - Integración con redes sociales
+  - Filtros por temática y fecha
 
-3. **Módulo de Normas Ambientales**
-   - Línea de tiempo de normatividad
-   - Buscador por tipo, año, materia
-   - Relaciones entre normas (deroga/modifica)
-   - Alertas de nuevas normas (suscripción)
+- **Módulo de Publicaciones:**
+  - Catálogo de publicaciones ambientales, científicas y videos
+  - Buscador avanzado con múltiples filtros:
+    - Por temática (13 temáticas ambientales)
+    - Por tipo de información (Bibliográfica/Documental)
+    - Por ámbito territorial (Departamento → Provincia → Distrito)
+    - Por año, institución, palabras clave
+  - Visualizador de PDFs integrado
+  - Sistema de etiquetado y categorización
+  - Descarga de documentos
+  - Compartir en redes sociales
+  - Metadatos completos según modelo de datos (2.1.3)
 
-4. **Módulo de Mapas (Geovisor)**
-   - Visor de capas geoespaciales interactivo
-   - Control de capas (activar/desactivar)
-   - Herramientas de consulta espacial (click, polígono)
-   - Descarga de datos geográficos (Shapefile, GeoJSON, KML)
-   - Generación de mapas estáticos para impresión
+- **Módulo de Normas:**
+  - Catálogo de normatividad ambiental regional
+  - Línea de tiempo de normatividad
+  - Buscador por tipo (Ley, Decreto, Resolución, Ordenanza), año, materia
+  - Relaciones entre normas (deroga/modifica) con visualización de relaciones
+  - Alertas de nuevas normas (suscripción por email)
+  - Filtros por ámbito (Nacional, Regional, Provincial, Distrital) y vigencia
+  - Metadatos: tipo, número, fecha, materia, ámbito, vigencia, relaciones (2.1.3)
 
-5. **Módulo de Actualidad**
-   - Noticias y eventos ambientales
-   - Galería de imágenes
-   - Videos embebidos
-   - Integración con redes sociales
+- **Módulo de Mapas (Mapoteca y Visor SINIA):**
+  - **Visor Geoespacial:**
+    - Compatible con estándares WMS/WFS/WMTS (2.1.4, 2.1.5)
+    - Integración del Visor SINIA (ArcGIS) como acceso rápido
+    - Control de capas (activar/desactivar múltiples capas)
+    - Herramientas de consulta espacial:
+      - Consulta por click (identificar)
+      - Consulta por polígono (selección de área)
+      - Consulta por buffer
+    - Herramientas de medición (distancia, área)
+    - Descarga de datos geográficos en múltiples formatos:
+      - Shapefile (ZIP)
+      - GeoJSON
+      - KML/KMZ
+      - CSV (para datos tabulares)
+    - Generación de mapas estáticos para impresión (PDF, PNG)
+    - Exportación de vistas de mapa con leyenda
+  - **Mapoteca:**
+    - Catálogo de capas geoespaciales disponibles
+    - Filtros por temática, tipo de geometría, fuente
+    - Metadatos completos según modelo de datos (2.1.3):
+      - Título, resumen, tema, tipo de geometría
+      - CRS (EPSG:4326 web, UTM para descarga)
+      - Escala, fuente, frecuencia de actualización
+      - Endpoints: WMS, WFS, WMTS, GeoJSON
+    - Previsualización de capas
+  - **Salvaguardas de Seguridad (2.1.5):**
+    - Para información sensible (PIACI, patrimonio cultural):
+      - Limitar nivel de zoom máximo
+      - Limitar descargas detalladas
+      - Redirigir a geoportales sectoriales con disclaimer
+    - Control de acceso por capa según permisos
 
-6. **Módulo CAR (Comisión Ambiental Regional)**
-   - Información de miembros
-   - Documentos y acuerdos
-   - Calendario de sesiones
-   - Proyectos en curso
+- **Módulo de Estadísticas Regionales:**
+  - Visualización de indicadores ambientales por temática (13 temáticas según 2.1.2)
+  - Visualización de series temporales con gráficos interactivos:
+    - Gráficos de línea temporal
+    - Gráficos de barras comparativos
+    - Gráficos de área
+    - Visualización de tendencias
+  - Filtros avanzados:
+    - Por temática (Agua, Aire, Biodiversidad, etc.)
+    - Por ámbito territorial (Departamento → Provincia → Distrito)
+    - Por cuenca (cuando aplique)
+    - Por período temporal
+    - Por indicador específico
+  - Exportación de datos:
+    - CSV
+    - Excel (XLSX)
+    - JSON
+  - Comparativas entre distritos/provincias:
+    - Tablas comparativas
+    - Gráficos de comparación
+  - Metadatos completos según modelo de datos (2.1.3):
+    - Nombre, definición, metodología
+    - Unidad, frecuencia
+    - Fuente, responsable, licencia
+    - Series temporales con fecha ISO, valor numérico, flag de calidad
 
-7. **Buscador Global**
-   - Búsqueda full-text en todos los contenidos
-   - Filtros por tipo de recurso
-   - Resultados paginados con relevancia
-   - Sugerencias de búsqueda
+- **Módulo Acerca de:**
+  - Información institucional (Qué es el SIAR)
+  - Contáctenos
+  - Información sobre la GRRNGA
+  - Enlaces a recursos relacionados
+
+- **Módulo CAR (Comisión Ambiental Regional):**
+  - Información de miembros de la CAR
+  - Documentos y acuerdos de la CAR
+  - Calendario de sesiones
+  - Proyectos en curso
+  - Historial de actividades
+
+**2. Navegación Transversal (Según 2.1.1):**
+
+- **Navegación por Temática:**
+  - Filtrado y navegación por las 13 temáticas ambientales:
+    1. Agua
+    2. Aire y Atmósfera
+    3. Asuntos Socioambientales
+    4. Biodiversidad y Ecosistemas
+    5. Cambio Climático
+    6. Clima y Eventos Naturales
+    7. Consumo Responsable y Producción Sostenible
+    8. Economía Ambiental y Bionegocios
+    9. Gestión de Riesgos y Desastres
+    10. Gestión, Fiscalización y Participación
+    11. Residuos
+    12. Salud Ambiental
+    13. Suelo y Tierra
+  - Cada temática muestra todos los recursos asociados (Indicadores, Documentos, Normas, Capas Geoespaciales)
+
+- **Navegación por Tipo de Información:**
+  - Filtros para:
+    - Estadística (Indicadores y Series Temporales)
+    - Bibliográfica/Documental (Publicaciones)
+    - Normativa (Normas Ambientales)
+    - Geoespacial (Capas y Mapas)
+
+- **Navegación por Ámbito Territorial:**
+  - Jerarquía: Departamento → Provincia → Distrito
+  - Inclusión de Cuencas cuando aplique
+  - Filtrado de recursos por ámbito geográfico
+  - Visualización en mapa del ámbito seleccionado
+
+**3. Buscador Global (Integrado en todos los módulos):**
+
+- Búsqueda full-text en todos los contenidos:
+  - Indicadores
+  - Documentos y Publicaciones
+  - Normas Ambientales
+  - Capas Geoespaciales
+  - Noticias y Actualidad
+- Filtros avanzados por tipo de recurso
+- Resultados paginados con relevancia
+- Sugerencias de búsqueda (autocompletado)
+- Búsqueda por palabras clave y metadatos
+- Búsqueda por fecha de publicación/actualización
+- Historial de búsquedas recientes
+
+**4. Interoperabilidad con Plataformas Nacionales (Según 2.1.4):**
+
+- Integración con plataformas mediante servicios OGC y APIs:
+  - **SINIA** - Sincronización semántica y cosecha de metadatos
+  - **GeoPerú (IDE Nacional)** - Registro del catálogo SIAR
+  - **Geoservidor MINAM y Geobosques** - Servicios geoespaciales
+  - **SERNANP** - Áreas Naturales Protegidas
+  - **SERFOR** - Información forestal
+  - **ANA - SNIRH** - Información hídrica
+  - **SENAMHI** - Clima y estaciones meteorológicas
+  - **MINCUL - BDPI** - Comunidades indígenas (con salvaguardas)
+  - **CENEPRED - SIGRID** - Gestión de riesgos
+  - **INGEMMET - GEOCATMIN** - Peligros geológicos
+  - **OEFA** - Fiscalización ambiental
+- Métodos de integración:
+  - Consumo de capas geográficas vía servicios OGC (WMS/WFS/WMTS)
+  - Consumo de series tabulares vía CSV/JSON/API
+  - Enlaces profundos a visores externos
+  - Registro del catálogo SIAR en GeoPerú
+
+**5. Funcionalidades de Visualización y Consulta:**
+
+- Visualización responsive en todos los dispositivos
+- Modo de visualización de lista y tarjetas
+- Ordenamiento de resultados (por fecha, relevancia, nombre)
+- Paginación de resultados
+- Vista previa de recursos antes de acceder al detalle
+- Compartir enlaces específicos de recursos
+- Impresión de páginas y recursos
+- Exportación de resultados de búsqueda
+
+##### Aplicación Móvil Colaborativa
+
+**Requisitos No Funcionales de la App Móvil:**
+
+| RNF | Especificación Mínima | Justificación y Criterio de Aceptación |
+| :---- | :---- | :---- |
+| **Arquitectura Móvil** | Desarrollo nativo multiplataforma (React Native u otra tecnología) como producto completamente separado del portal web. | La app móvil debe funcionar de manera independiente, con su propio ciclo de desarrollo y despliegue, compartiendo únicamente las APIs del backend. |
+| **Modo Offline** | Funcionalidad completa sin conexión a internet, con sincronización posterior al recuperar conectividad. | Esencial para trabajo en campo donde la conectividad es limitada o inexistente. |
+| **Acceso a Hardware** | Acceso completo a sensores nativos del dispositivo (GPS de alta precisión, cámara, acelerómetro). | Requerido para captura de datos geo-referenciados y fotografías en campo. |
+| **Rendimiento** | Tiempo de inicio < 3 segundos, navegación fluida entre pantallas. | Experiencia de usuario óptima en dispositivos de gama media. |
+| **Consumo de Batería** | Optimización para trabajo prolongado en campo (mínimo 4 horas de uso continuo con GPS activo). | Necesario para sesiones de trabajo en campo. |
+| **Almacenamiento Local** | Capacidad de almacenar contribuciones pendientes y datos cacheados sin límites de espacio excesivos. | Permitir múltiples contribuciones offline antes de sincronizar. |
+| **Seguridad** | Autenticación con JWT/OAuth 2.0, encriptación de datos sensibles en almacenamiento local. | Protección de datos de usuarios y contribuciones. |
+| **Notificaciones Push** | Sistema de notificaciones push nativas para alertas sobre estado de contribuciones. | Mantener a usuarios informados sobre moderación de sus aportes. |
+| **Diseño UX/UI Nativo** | Interfaces que siguen las guías de diseño de Android (Material Design) e iOS (Human Interface Guidelines). | Experiencia nativa y familiar para usuarios. |
+
+**Requisitos Funcionales de la App Móvil:**
+
+La aplicación móvil está enfocada en la **colaboración ciudadana** para aportar información ambiental desde el campo. Basado en el modelo de datos acordado (2.1.3) y las temáticas ambientales (2.1.2), debe implementar:
+
+**1. Sistema de Autenticación y Usuarios:**
+
+- Registro de usuarios con validación de email
+- Login con credenciales
+- Recuperación de contraseña
+- Perfil de usuario personalizable
+- Gestión de preferencias de notificaciones
+- Historial de contribuciones personales
+- Dashboard personal con estadísticas de aportes
+
+**2. Módulo de Contribuciones Colaborativas (Funcionalidad Principal):**
+
+Basado en las 13 temáticas ambientales (2.1.2) y los tipos de recursos del modelo de datos (2.1.3):
+
+- **Formularios de Contribución por Temática:**
+  - **Reporte de Observaciones Ambientales:**
+    - Calidad del agua (transparencia, color, presencia de residuos)
+    - Calidad del aire (visibilidad, olores, contaminación visible)
+    - Estado de biodiversidad (presencia de especies, estado de ecosistemas)
+    - Condiciones del suelo (erosión, degradación)
+    - Gestión de residuos (acumulación, vertederos ilegales)
+  - **Registro Fotográfico Geo-referenciado:**
+    - Captura de fotografías con cámara nativa
+    - Captura automática de coordenadas GPS (alta precisión)
+    - Timestamp automático
+    - Descripción y etiquetas
+    - Selección de temática asociada
+    - Asociación con especies observadas (opcional)
+    - Tipo de observación (amenaza, avistamiento, estado del ecosistema)
+  - **Carga de Datos de Campo:**
+    - Mediciones ambientales (temperatura, pH, conductividad, etc.)
+    - Series temporales desde campo
+    - Datos de monitoreo ciudadano
+    - Asociación con indicadores ambientales existentes
+  - **Reporte de Incidencias Ambientales:**
+    - Vertimientos, deforestación, contaminación
+    - Ubicación precisa con GPS
+    - Evidencia fotográfica/videográfica
+    - Descripción detallada del incidente
+    - Severidad del impacto
+    - Notificación urgente (opcional)
+  - **Registro de Especies:**
+    - Aves, flora, fauna observada
+    - Ubicación exacta con GPS
+    - Fotos y descripción
+    - Estado de conservación observado
+    - Asociación con temática de Biodiversidad
+
+**3. Características Técnicas de Contribuciones:**
+
+- Captura automática de coordenadas GPS (alta precisión)
+- Integración con cámara nativa para fotos/videos
+- Selección de ubicación en mapa si GPS no disponible
+- Modo offline: guardar contribuciones localmente y sincronizar después
+- Validación de formularios antes de envío
+- Preview de contribución antes de enviar
+- Adjuntar múltiples archivos (fotos, videos, documentos)
+- Asociación de contribuciones con temáticas ambientales (2.1.2)
+- Metadatos automáticos: fecha, hora, coordenadas, usuario
+
+**4. Sistema de Moderación y Seguimiento:**
+
+- Cola de revisión para contribuciones
+- Notificaciones push sobre estado de aportes:
+  - Contribución recibida
+  - Contribución en revisión
+  - Contribución aprobada
+  - Contribución rechazada (con motivo)
+- Historial completo de cambios y versionado
+- Feedback a contribuyentes sobre aprobación/rechazo
+- Re-envío de contribuciones rechazadas (con correcciones)
+
+**5. Reconocimiento y Participación:**
+
+- Dashboard personal de contribuciones del usuario
+- Ranking de colaboradores más activos
+- Badges por número de aportes validados
+- Certificados de participación (opcional, descargables)
+- Créditos en publicaciones generadas con datos colaborativos
+- Estadísticas personales:
+  - Total de contribuciones
+  - Contribuciones aprobadas
+  - Contribuciones pendientes
+  - Contribuciones por temática
+
+**6. Visualización de Información (Solo Consulta):**
+
+- Acceso a información ambiental del portal (solo lectura):
+  - Visualización de mapas con servicios OGC
+  - Consulta de indicadores ambientales
+  - Visualización de documentos públicos
+  - Consulta de normas ambientales
+- Descarga de capas geoespaciales para uso offline
+- Búsqueda de información ambiental
+- Filtros por temática y ámbito territorial
+
+**7. Funcionalidades Offline:**
+
+- Trabajar completamente sin conexión
+- Guardar contribuciones pendientes localmente
+- Sincronización automática al recuperar conectividad
+- Caché de mapas base para uso offline
+- Caché de datos consultados recientemente
+- Indicador de estado de sincronización
+
+**8. Integración con Servicios del Backend:**
+
+- Consumo de API de Strapi para:
+  - Autenticación
+  - Envío de contribuciones
+  - Consulta de información
+  - Notificaciones
+- Consumo de servicios OGC (WMS/WMTS) para:
+  - Visualización de mapas
+  - Descarga de capas para offline
 
 #### 2.2.7. Despliegue y DevOps
 
