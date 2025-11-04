@@ -24,18 +24,22 @@
   - [2.2.1. Servicio](#221-servicio)
   - [2.2.2. Objeto](#222-objeto)
   - [2.2.3. Alcance](#223-alcance)
-  - [2.2.4. Requisitos No Funcionales](#224-requisitos-no-funcionales)
-  - [2.2.5. Arquitectura y Stack Tecnológico](#225-arquitectura-y-stack-tecnológico)
+  - [2.2.4. Arquitectura General del Sistema](#224-arquitectura-general-del-sistema)
+    - [Vista General de la Arquitectura](#vista-general-de-la-arquitectura)
     - [Flexibilidad Tecnológica y Alternativas](#flexibilidad-tecnológica-y-alternativas)
-  - [2.2.6. El Servidor Geoespacial](#226-el-servidor-geoespacial)
-  - [2.2.7. Capa de Presentación - Frontend](#227-capa-de-presentación---frontend)
-    - [Portal Web de Consulta](#portal-web-de-consulta-aplicación-web-estándar)
-    - [Aplicación Móvil Colaborativa](#aplicación-móvil-colaborativa-producto-independiente)
-  - [2.2.8. Capa de Aplicación - Backend CMS](#228-capa-de-aplicación---backend-cms)
-    - [API Pública Documentada para Uso Externo](#api-pública-documentada-para-uso-externo)
-  - [2.2.9. Capa de Datos - Arquitectura Híbrida](#229-capa-de-datos---arquitectura-híbrida)
-  - [2.2.10. Consideraciones de Despliegue y DevOps](#2210-consideraciones-de-despliegue-y-devops)
-  - [2.2.11. Requisitos Funcionales](#2211-requisitos-funcionales)
+  - [2.2.5. Componentes del Sistema por Capas](#225-componentes-del-sistema-por-capas)
+    - [Capa de Presentación - Frontend](#capa-de-presentación---frontend)
+      - [Portal Web de Consulta](#portal-web-de-consulta-aplicación-web-estándar)
+      - [Aplicación Móvil Colaborativa](#aplicación-móvil-colaborativa-producto-independiente)
+    - [Capa de Aplicación - Backend CMS](#capa-de-aplicación---backend-cms)
+      - [API Pública Documentada para Uso Externo](#api-pública-documentada-para-uso-externo)
+    - [Capa de Datos - Arquitectura Híbrida](#capa-de-datos---arquitectura-híbrida)
+    - [Servidor Geoespacial](#servidor-geoespacial)
+  - [2.2.6. Requisitos](#226-requisitos)
+    - [Requisitos No Funcionales](#requisitos-no-funcionales)
+    - [Requisitos Funcionales](#requisitos-funcionales)
+  - [2.2.7. Despliegue y DevOps](#227-despliegue-y-devops)
+  - [2.2.8. Entregables y Transferencia de Conocimiento](#228-entregables-y-transferencia-de-conocimiento)
 - [2.3. Identificación de proveedores](#23-identificación-de-proveedores)
 - [2.4. Presupuesto detallado](#24-presupuesto-detallado)
 
@@ -304,18 +308,9 @@ Contratar un servicio especializado para el diseño, desarrollo e implementació
 - **Repositorio Git** con todo el código fuente de las aplicaciones (Portal Web y App Móvil) con historial completo de commits
 - Capacitación y transferencia tecnológica
 
-#### 2.2.4. Requisitos No Funcionales
+#### 2.2.4. Arquitectura General del Sistema
 
-| RNF | Especificación Mínima | Justificación y Criterio de Aceptación |
-| :---- | :---- | :---- |
-| **Arquitectura Front-end** | Single Page Application (SPA) con Server-Side Rendering (SSR). | Obligatorio el uso de un *framework* moderno (Next.js) para optimizar el SEO y el TTFB (Time To First Byte). |
-| **Mobile First Estricto** | Todo el diseño, maquetado y prototipado del portal web debe ser iniciado y validado para pantallas móviles antes que para escritorio. | Prioriza la accesibilidad ciudadana desde dispositivos móviles. |
-| **Performance (Lighthouse)** | El portal web debe obtener un puntaje mínimo de 90/100 en las métricas de Performance y Accesibilidad de Google Lighthouse en dispositivos móviles. | Medida objetiva de optimización de código y tiempos de carga. |
-| **Aplicación Móvil Independiente** | Desarrollo nativo multiplataforma (React Native u otra tecnología) como producto completamente separado del portal web. | La app móvil debe funcionar de manera independiente, con su propio ciclo de desarrollo y despliegue, compartiendo únicamente las APIs del backend. |
-| **Diseño UX/UI** | Desarrollo de un Sistema de Diseño (paleta, tipografía, componentes) y presentación de un Informe de Pruebas de Usabilidad con usuarios no técnicos de La Libertad. | Asegura la coherencia visual, la escalabilidad y una interfaz amigable y sencilla, contrarrestando la mala UX de plataformas estatales. |
-| **Seguridad** | Implementación de medidas de seguridad a nivel API (JWT/OAuth 2.0) y *Front-end* (manejo de *tokens*, protección contra XSS). | El CMS Strapi debe ser accesible sólo a través de la red interna (VPN) o con estricto control de acceso. |
-
-#### 2.2.5. Arquitectura y Stack Tecnológico
+##### Vista General de la Arquitectura
 
 La plataforma SIAR implementa una **arquitectura híbrida desacoplada** que combina servicios en la nube (Frontend y Backend CMS) con infraestructura On-Premise (Servidor Geoespacial y Base de Datos GIS).
 
@@ -526,7 +521,9 @@ Si el arquitecto decide usar **Flutter en lugar de React Native** para la app m�
 - ✅ Debe ser producto independiente con código base separado del portal web
 - ✅ Debe tener renderizado nativo y acceso completo a APIs del dispositivo
 
-#### 2.2.6. El Servidor Geoespacial (GeoServer/ArcGIS Server)
+#### 2.2.5. Componentes del Sistema por Capas
+
+##### Servidor Geoespacial (GeoServer/ArcGIS Server)
 
 El Servidor Geoespacial es el **intermediario esencial** que permite que el frontend (Portal Web y App Móvil) consuma los datos geográficos de forma segura y optimizada.
 
@@ -679,7 +676,7 @@ El frontend tiene **DOS conexiones independientes**:
 - Comunidad activa y documentación extensa
 - Escalabilidad suficiente para 1M+ visitas/año del portal
 
-#### 2.2.7. Capa de Presentación - Frontend
+##### Capa de Presentación - Frontend
 
 ##### Portal Web de Consulta (Aplicación Web Estándar)
 
@@ -884,7 +881,7 @@ La app móvil está diseñada específicamente para permitir que ciudadanos, inv
 - **Offline-first:** Funcionalidad completa sin conexión, ideal para trabajo en campo
 - **Notificaciones:** Push notifications nativas para mantener a usuarios informados
 
-#### 2.2.8. Capa de Aplicación - Backend CMS
+##### Capa de Aplicación - Backend CMS
 
 ##### Strapi Headless CMS
 
@@ -1173,7 +1170,7 @@ Flujo en el portal de documentación:
    - Servicios de notificación automática
    - Webhooks para integraciones en tiempo real
 
-#### 2.2.9. Capa de Datos - Arquitectura Híbrida
+##### Capa de Datos - Arquitectura Híbrida
 
 ##### Base de Datos en la Nube (PostgreSQL/PostGIS Managed)
 
@@ -1414,7 +1411,67 @@ Solo si hay presupuesto para desarrollo adicional:
 - CORS configurado (solo dominios autorizados)
 - API Key rotation cada 90 días
 
-#### 2.2.10. Consideraciones de Despliegue y DevOps
+#### 2.2.6. Requisitos
+
+##### Requisitos No Funcionales
+
+| RNF | Especificación Mínima | Justificación y Criterio de Aceptación |
+| :---- | :---- | :---- |
+| **Arquitectura Front-end** | Single Page Application (SPA) con Server-Side Rendering (SSR). | Obligatorio el uso de un *framework* moderno (Next.js) para optimizar el SEO y el TTFB (Time To First Byte). |
+| **Mobile First Estricto** | Todo el diseño, maquetado y prototipado del portal web debe ser iniciado y validado para pantallas móviles antes que para escritorio. | Prioriza la accesibilidad ciudadana desde dispositivos móviles. |
+| **Performance (Lighthouse)** | El portal web debe obtener un puntaje mínimo de 90/100 en las métricas de Performance y Accesibilidad de Google Lighthouse en dispositivos móviles. | Medida objetiva de optimización de código y tiempos de carga. |
+| **Aplicación Móvil Independiente** | Desarrollo nativo multiplataforma (React Native u otra tecnología) como producto completamente separado del portal web. | La app móvil debe funcionar de manera independiente, con su propio ciclo de desarrollo y despliegue, compartiendo únicamente las APIs del backend. |
+| **Diseño UX/UI** | Desarrollo de un Sistema de Diseño (paleta, tipografía, componentes) y presentación de un Informe de Pruebas de Usabilidad con usuarios no técnicos de La Libertad. | Asegura la coherencia visual, la escalabilidad y una interfaz amigable y sencilla, contrarrestando la mala UX de plataformas estatales. |
+| **Seguridad** | Implementación de medidas de seguridad a nivel API (JWT/OAuth 2.0) y *Front-end* (manejo de *tokens*, protección contra XSS). | El CMS Strapi debe ser accesible sólo a través de la red interna (VPN) o con estricto control de acceso. |
+
+##### Requisitos Funcionales
+
+**Módulos Principales Confirmados:**
+
+1. **Módulo de Estadísticas e Indicadores**
+   - Visualización de series temporales con gráficos interactivos
+   - Filtros por temática, ámbito territorial y período
+   - Exportación de datos (CSV, Excel, JSON)
+   - Comparativas entre distritos/provincias
+
+2. **Módulo de Documentos y Publicaciones**
+   - Buscador avanzado con filtros multiples
+   - Visualizador de PDFs integrado
+   - Sistema de etiquetado y categorización
+   - Descarga y compartir en redes sociales
+
+3. **Módulo de Normas Ambientales**
+   - Línea de tiempo de normatividad
+   - Buscador por tipo, año, materia
+   - Relaciones entre normas (deroga/modifica)
+   - Alertas de nuevas normas (suscripción)
+
+4. **Módulo de Mapas (Geovisor)**
+   - Visor de capas geoespaciales interactivo
+   - Control de capas (activar/desactivar)
+   - Herramientas de consulta espacial (click, polígono)
+   - Descarga de datos geográficos (Shapefile, GeoJSON, KML)
+   - Generación de mapas estáticos para impresión
+
+5. **Módulo de Actualidad**
+   - Noticias y eventos ambientales
+   - Galería de imágenes
+   - Videos embebidos
+   - Integración con redes sociales
+
+6. **Módulo CAR (Comisión Ambiental Regional)**
+   - Información de miembros
+   - Documentos y acuerdos
+   - Calendario de sesiones
+   - Proyectos en curso
+
+7. **Buscador Global**
+   - Búsqueda full-text en todos los contenidos
+   - Filtros por tipo de recurso
+   - Resultados paginados con relevancia
+   - Sugerencias de búsqueda
+
+#### 2.2.7. Despliegue y DevOps
 
 ##### Entornos de Desarrollo
 
@@ -1502,6 +1559,8 @@ Solo si hay presupuesto para desarrollo adicional:
 - Tiempo máximo de recuperación: 24 horas
 - Prueba de restauración: Semestral
 
+#### 2.2.8. Entregables y Transferencia de Conocimiento
+
 ##### Documentación Técnica Requerida
 
 **Documentación Mínima Requerida:**
@@ -1583,55 +1642,6 @@ Solo si hay presupuesto para desarrollo adicional:
 **Actualizaciones:**
 - Parches de seguridad críticos (cuando sea necesario)
 - Corrección de bugs (durante el período de garantía)
-
-#### 2.2.11. Requisitos Funcionales
-
-*(Pendiente de desarrollo detallado - Se definirán en función de la coordinación con el Ingeniero Ambiental ya completada)*
-
-**Módulos Principales Confirmados:**
-
-1. **Módulo de Estadísticas e Indicadores**
-   - Visualización de series temporales con gráficos interactivos
-   - Filtros por temática, ámbito territorial y período
-   - Exportación de datos (CSV, Excel, JSON)
-   - Comparativas entre distritos/provincias
-
-2. **Módulo de Documentos y Publicaciones**
-   - Buscador avanzado con filtros multiples
-   - Visualizador de PDFs integrado
-   - Sistema de etiquetado y categorización
-   - Descarga y compartir en redes sociales
-
-3. **Módulo de Normas Ambientales**
-   - Línea de tiempo de normatividad
-   - Buscador por tipo, año, materia
-   - Relaciones entre normas (deroga/modifica)
-   - Alertas de nuevas normas (suscripción)
-
-4. **Módulo de Mapas (Geovisor)**
-   - Visor de capas geoespaciales interactivo
-   - Control de capas (activar/desactivar)
-   - Herramientas de consulta espacial (click, polígono)
-   - Descarga de datos geográficos (Shapefile, GeoJSON, KML)
-   - Generación de mapas estáticos para impresión
-
-5. **Módulo de Actualidad**
-   - Noticias y eventos ambientales
-   - Galería de imágenes
-   - Videos embebidos
-   - Integración con redes sociales
-
-6. **Módulo CAR (Comisión Ambiental Regional)**
-   - Información de miembros
-   - Documentos y acuerdos
-   - Calendario de sesiones
-   - Proyectos en curso
-
-7. **Buscador Global**
-   - Búsqueda full-text en todos los contenidos
-   - Filtros por tipo de recurso
-   - Resultados paginados con relevancia
-   - Sugerencias de búsqueda
 
 ### 2.3. Identificación de proveedores
 
