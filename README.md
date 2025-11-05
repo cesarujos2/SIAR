@@ -698,6 +698,11 @@ Se utiliza **GeoServer** como servidor geoespacial para el proyecto SIAR debido 
 
 **El Portal Web es un producto independiente de solo consulta**, desarrollado como aplicación web estándar con SSR para visualización y consumo de información ambiental. **No incluye funcionalidades colaborativas** - estas están disponibles únicamente en la aplicación móvil.
 
+**IMPORTANTE - Acceso Público:**
+- **El Portal Web es completamente público** - No requiere autenticación ni registro de usuarios
+- **No tiene sistema de usuarios** - Todos los contenidos son accesibles sin restricciones
+- **Acceso libre** para cualquier visitante sin necesidad de crear cuenta
+
 **Propósito:**
 - Visualización y consulta de información ambiental regional
 - Exploración de mapas geoespaciales interactivos
@@ -790,24 +795,27 @@ La app móvil está diseñada específicamente para permitir que ciudadanos, inv
 
 **Sistema de Usuarios y Autenticación:**
 
-**Tipos de Usuario en la App Móvil:**
-1. **Usuario Registrado** (contribuyente colaborativo)
-   - Registro con validación de email desde la app
+**IMPORTANTE - Usuarios de la App Móvil:**
+- **La aplicación móvil está dirigida a la ciudadanía general** - No es para uso interno del Gobierno Regional
+- **Autenticación mediante OAuth 2.0** - Integración con proveedores externos:
+  - **Google Sign-In** (OAuth 2.0)
+  - **Apple Sign-In** (OAuth 2.0)
+  - Autenticación simple y general para facilitar el acceso ciudadano
+- **No requiere credenciales internas** - Los usuarios se registran con sus cuentas personales (Google/Apple)
+
+**Tipos de Usuario en la App Móvil (Ciudadanía):**
+1. **Usuario Registrado** (contribuyente colaborativo ciudadano)
+   - Registro mediante OAuth 2.0 (Google o Apple)
    - Perfil de usuario personalizable
-   - Contribución de datos ambientales (sujeto a moderación)
+   - Contribución de datos ambientales desde el campo (sujeto a moderación)
    - Historial de contribuciones personales
    - Sistema de reputación/badges
 
-2. **Usuario Verificado** (instituciones, investigadores)
+2. **Usuario Verificado** (instituciones, investigadores externos)
    - Verificación manual mediante documentación subida desde la app
    - Mayor credibilidad en contribuciones
    - Contribuciones con menor moderación
    - Acceso a estadísticas de sus aportes
-
-3. **Editor Ambiental** (interno GRRNGA)
-   - Acceso desde app móvil para revisar contribuciones en campo
-   - Validación y aprobación de aportes colaborativos
-   - Moderación de contenido desde móvil
 
 **Funcionalidades Colaborativas en la App Móvil:**
 
@@ -859,8 +867,8 @@ La app móvil está diseñada específicamente para permitir que ciudadanos, inv
    - Créditos en publicaciones generadas con datos colaborativos
 
 **Requisitos Funcionales Móviles:**
-- **Gestión de cuentas de usuario** completa (registro, login, perfil)
-- **Autenticación** con JWT / OAuth 2.0
+- **Gestión de cuentas de usuario** completa para ciudadanía (registro, login, perfil)
+- **Autenticación mediante OAuth 2.0** - Integración con Google Sign-In y Apple Sign-In (no credenciales internas)
 - **Contribuciones colaborativas** como funcionalidad principal
 - Carga de fotografías/videos geo-referenciadas con cámara nativa
 - Captura automática de GPS de alta precisión
@@ -1003,24 +1011,41 @@ La app móvil está diseñada específicamente para permitir que ciudadanos, inv
 - **@strapi/plugin-upload** (gestión de media)
 - **strapi-plugin-seo** (opcional, metadatos SEO)
 
-**Roles y Permisos:**
+**Roles y Permisos del CMS:**
 
-**Roles para Portal Web (Solo Consulta):**
-1. **Visitante Público** - Solo lectura de información pública (sin autenticación)
-2. **Viewer Autenticado** - Lectura de información con posibilidad de guardar búsquedas/favoritos
+**IMPORTANTE - Usuarios del CMS (Backend):**
+- **El CMS es exclusivo para uso interno del Gobierno Regional de La Libertad y Municipalidades**
+- **Acceso restringido** - Solo personal autorizado puede acceder al panel de administración
+- **Autenticación específica** - Credenciales administradas por el Gobierno Regional (no OAuth externo)
+- **Separado de usuarios de la App Móvil** - Los usuarios ciudadanos de la app no tienen acceso al CMS
 
-**Roles para App Móvil (Colaboración):**
-3. **Usuario Registrado** - CREATE de contribuciones colaborativas sujetas a moderación
-4. **Usuario Verificado** - CREATE de contribuciones con moderación reducida
-5. **Editor Ambiental** - Moderación y aprobación de contribuciones colaborativas desde móvil
+**Roles del CMS (Personal del Gobierno Regional y Municipalidades):**
 
-**Roles para Backend CMS (Gestión):**
-6. **Super Admin** - Control total del sistema
-7. **Editor Ambiental** - CRUD sobre Indicators, Documents, News, LegalNorms, moderación de contribuciones
-8. **Editor GIS** - CRUD sobre GeoLayers, actualización de endpoints
-9. **Editor Municipal** - CREATE/UPDATE limitado a su ámbito territorial
+1. **Super Admin** (GRRNGA)
+   - Control total del sistema
+   - Gestión de usuarios y permisos
+   - Configuración general del sistema
 
-**Nota:** Las contribuciones colaborativas solo se pueden realizar desde la aplicación móvil, no desde el portal web.
+2. **Editor Ambiental** (GRRNGA)
+   - CRUD completo sobre Indicators, Documents, News, LegalNorms
+   - Moderación y aprobación de contribuciones colaborativas de la app móvil
+   - Gestión de contenido editorial
+
+3. **Editor GIS** (GRRNGA)
+   - CRUD sobre GeoLayers
+   - Actualización de endpoints de servicios OGC
+   - Gestión de metadatos geoespaciales
+
+4. **Editor Municipal** (Municipalidades)
+   - CREATE/UPDATE limitado a su ámbito territorial específico
+   - Gestión de contenido relacionado con su jurisdicción
+   - Sin acceso a contenido de otras municipalidades
+
+**Notas Importantes:**
+- **Portal Web:** Es público, no tiene usuarios ni autenticación
+- **App Móvil:** Usuarios ciudadanos con OAuth 2.0 (Google/Apple) - separados del CMS
+- **CMS:** Usuarios específicos del Gobierno Regional y Municipalidades - acceso restringido
+- Las contribuciones colaborativas solo se pueden realizar desde la aplicación móvil, no desde el portal web
 
 **APIs Generadas:**
 - **REST API:** `/api/indicators`, `/api/documents`, etc.
@@ -1030,9 +1055,12 @@ La app móvil está diseñada específicamente para permitir que ciudadanos, inv
   - Ordenamiento: `?sort[0]=publishedAt:desc`
 - **GraphQL API:** Endpoint `/graphql` con schema auto-generado
 
-**Autenticación:**
-- **JWT** para frontend web/mobile
-- **API Tokens** para integraciones externas
+**Autenticación del CMS:**
+- **Autenticación interna** - Sistema de credenciales propio del CMS (email/password)
+- **No usa OAuth externo** - Los usuarios del CMS se autentican con credenciales administradas por el Gobierno Regional
+- **JWT** para sesiones de administración
+- **API Tokens** para integraciones externas (API pública documentada)
+- **Acceso restringido** - Solo desde red interna (VPN) o con control de acceso estricto
 
 **Hosting Recomendado (uno de los siguientes):**
 - **AWS:** EC2 + RDS PostgreSQL + S3
@@ -1439,7 +1467,7 @@ Solo si hay presupuesto para desarrollo adicional:
 | **Mobile First Estricto** | Todo el diseño, maquetado y prototipado del portal web debe ser iniciado y validado para pantallas móviles antes que para escritorio. | Prioriza la accesibilidad ciudadana desde dispositivos móviles. |
 | **Performance (Lighthouse)** | El portal web debe obtener un puntaje mínimo de 90/100 en las métricas de Performance y Accesibilidad de Google Lighthouse en dispositivos móviles. | Medida objetiva de optimización de código y tiempos de carga. |
 | **Diseño UX/UI** | Desarrollo de un Sistema de Diseño (paleta, tipografía, componentes) y presentación de un Informe de Pruebas de Usabilidad con usuarios no técnicos de La Libertad. | Asegura la coherencia visual, la escalabilidad y una interfaz amigable y sencilla, contrarrestando la mala UX de plataformas estatales. |
-| **Seguridad** | Implementación de medidas de seguridad a nivel API (JWT/OAuth 2.0) y *Front-end* (manejo de *tokens*, protección contra XSS). | El CMS Strapi debe ser accesible sólo a través de la red interna (VPN) o con estricto control de acceso. |
+| **Seguridad** | Portal Web público sin autenticación. El CMS Strapi (backend) debe ser accesible sólo a través de la red interna (VPN) o con estricto control de acceso para usuarios del Gobierno Regional. Protección contra XSS en el frontend. | Separación clara: Portal público sin usuarios, CMS restringido solo para personal autorizado del Gobierno Regional y Municipalidades. |
 | **Accesibilidad Web** | Cumplimiento con WCAG 2.1 nivel AA mínimo. | Garantiza acceso a personas con discapacidades. |
 | **SEO** | Optimización para motores de búsqueda (meta tags, structured data, sitemap). | Mayor visibilidad del contenido ambiental en búsquedas. |
 
@@ -1640,7 +1668,7 @@ Basados en la coordinación con el Ingeniero Ambiental (Sección 2.1), el Portal
 | **Rendimiento** | Tiempo de inicio < 3 segundos, navegación fluida entre pantallas. | Experiencia de usuario óptima en dispositivos de gama media. |
 | **Consumo de Batería** | Optimización para trabajo prolongado en campo (mínimo 4 horas de uso continuo con GPS activo). | Necesario para sesiones de trabajo en campo. |
 | **Almacenamiento Local** | Capacidad de almacenar contribuciones pendientes y datos cacheados sin límites de espacio excesivos. | Permitir múltiples contribuciones offline antes de sincronizar. |
-| **Seguridad** | Autenticación con JWT/OAuth 2.0, encriptación de datos sensibles en almacenamiento local. | Protección de datos de usuarios y contribuciones. |
+| **Seguridad** | Autenticación mediante OAuth 2.0 (Google Sign-In, Apple Sign-In) para ciudadanía, encriptación de datos sensibles en almacenamiento local. | Protección de datos de usuarios y contribuciones. Sistema de autenticación simple y general para facilitar acceso ciudadano. |
 | **Notificaciones Push** | Sistema de notificaciones push nativas para alertas sobre estado de contribuciones. | Mantener a usuarios informados sobre moderación de sus aportes. |
 | **Diseño UX/UI Nativo** | Interfaces que siguen las guías de diseño de Android (Material Design) e iOS (Human Interface Guidelines). | Experiencia nativa y familiar para usuarios. |
 
@@ -1648,15 +1676,18 @@ Basados en la coordinación con el Ingeniero Ambiental (Sección 2.1), el Portal
 
 La aplicación móvil está enfocada en la **colaboración ciudadana** para aportar información ambiental desde el campo. Basado en el modelo de datos acordado (2.1.3) y las temáticas ambientales (2.1.2), debe implementar:
 
-**1. Sistema de Autenticación y Usuarios:**
+**1. Sistema de Autenticación y Usuarios (Ciudadanía):**
 
-- Registro de usuarios con validación de email
-- Login con credenciales
-- Recuperación de contraseña
+- **Autenticación mediante OAuth 2.0** - Integración con proveedores externos:
+  - **Google Sign-In** (OAuth 2.0)
+  - **Apple Sign-In** (OAuth 2.0)
+  - Autenticación simple sin necesidad de crear cuenta nueva
+- Registro automático mediante OAuth (no requiere validación de email adicional)
 - Perfil de usuario personalizable
 - Gestión de preferencias de notificaciones
 - Historial de contribuciones personales
 - Dashboard personal con estadísticas de aportes
+- **Nota:** Este sistema es para ciudadanía general, no para personal del Gobierno Regional
 
 **2. Módulo de Contribuciones Colaborativas (Funcionalidad Principal):**
 
