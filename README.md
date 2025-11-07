@@ -30,10 +30,10 @@
   - [2.2.5. Componentes del Sistema por Capas](#225-componentes-del-sistema-por-capas)
     - [Servidor Geoespacial](#servidor-geoespacial-geoserver)
     - [Capa de Presentación - Frontend](#capa-de-presentación---frontend)
-      - [Portal Web de Consulta](#portal-web-de-consulta-aplicación-web-estándar)
       - [Aplicación Móvil Colaborativa](#aplicación-móvil-colaborativa-producto-independiente)
     - [Capa de Aplicación - Backend CMS](#capa-de-aplicación---backend-cms)
       - [Strapi Headless CMS](#strapi-headless-cms)
+      - [Integración con API del MINAM](#integración-con-api-del-minam-para-publicación-en-siar)
       - [API Pública Documentada para Uso Externo](#api-pública-documentada-para-uso-externo)
     - [Capa de Datos - Arquitectura Híbrida](#capa-de-datos---arquitectura-híbrida)
       - [Base de Datos en la Nube](#base-de-datos-en-la-nube-postgresqlpostgis-managed)
@@ -42,9 +42,6 @@
       - [Gestión de Archivos GIS](#gestión-de-archivos-gis---pipeline-de-carga-usuario-gis)
       - [Seguridad y Acceso](#seguridad-y-acceso)
   - [2.2.6. Requisitos](#226-requisitos)
-    - [Portal Web de Consulta](#portal-web-de-consulta)
-      - [Requisitos No Funcionales del Portal Web](#requisitos-no-funcionales-del-portal-web)
-      - [Requisitos Funcionales del Portal Web](#requisitos-funcionales-del-portal-web)
     - [Aplicación Móvil Colaborativa](#aplicación-móvil-colaborativa)
       - [Requisitos No Funcionales de la App Móvil](#requisitos-no-funcionales-de-la-app-móvil)
       - [Requisitos Funcionales de la App Móvil](#requisitos-funcionales-de-la-app-móvil)
@@ -178,9 +175,9 @@ Elaborar el presupuesto detallado (Análisis de Costos) para este paquete.
 
 **Estado:** Reunión realizada y requisitos funcionales definidos.
 
-#### 2.1.1. Estructura de Navegación del Portal
+#### 2.1.1. Estructura de Información para el SIAR
 
-El portal seguirá la estructura organizativa del SINIA Nacional, con los siguientes menús principales:
+**NOTA:** Ya no se desarrolla un portal web propio. La información se publicará en el **SIAR del MINAM** mediante su API. La estructura de información debe seguir la organización del SINIA Nacional para compatibilidad con el SIAR del MINAM. Los datos se organizarán según los siguientes módulos principales:
 
 - **Actualidad:** Novedades y contenidos destacados
 - **Publicaciones:** Ambientales, Científicas y Videos
@@ -190,10 +187,15 @@ El portal seguirá la estructura organizativa del SINIA Nacional, con los siguie
 - **Acerca de:** Información institucional (Qué es el SIAR, Contáctenos)
 - **Comisión Ambiental Regional (CAR):** Módulo de gobernanza intersectorial
 
-**Navegación transversal por:**
+**Organización transversal de datos:**
 - **Temática:** 13 temáticas ambientales (Agua, Aire, Biodiversidad, etc.)
 - **Tipo de información:** Estadística, Bibliográfica/Documental, Normativa, Geoespacial
 - **Ámbito territorial:** Departamento → Provincia → Distrito (+ Cuencas cuando aplique)
+
+**Esta estructura se utilizará para:**
+- Organizar datos en Strapi CMS
+- Formatear datos para envío al API del MINAM
+- Visualización en el SIAR del MINAM (página La Libertad)
 
 #### 2.1.2. Taxonomía de Información
 
@@ -293,128 +295,116 @@ El Ingeniero Ambiental ha proporcionado:
 
 ### 2.2. Términos de Referencia (TDR)
 
-Redactar los Términos de Referencia para el "Servicio de Desarrollo e Implementación del Portal Web y Aplicación Móvil del SIAR", integrando los requisitos funcionales definidos.
+Redactar los Términos de Referencia para el "Servicio de Desarrollo e Implementación de la Aplicación Móvil Colaborativa y Sistema de Integración con el SIAR del MINAM del SIAR", integrando los requisitos funcionales definidos.
 
 #### 2.2.1. Servicio
 
-**Desarrollo e Implementación del Portal Web y Aplicación Móvil del Sistema de Información Ambiental Regional (SIAR) La Libertad**
+**Desarrollo e Implementación de la Aplicación Móvil Colaborativa y Sistema de Integración con el SIAR del MINAM del Sistema de Información Ambiental Regional (SIAR) La Libertad**
 
 **Unidad Solicitante:** Gerencia Regional de Recursos Naturales y Gestión Ambiental (GRRNGA) – Subgerencia de Gestión Ambiental
 
 #### 2.2.2. Objeto
 
-Contratar un servicio especializado para el diseño, desarrollo e implementación de una plataforma digital ambiental regional de alto rendimiento, compuesta por un **Portal Web de consulta con SSR** para visualización y consumo de información ambiental, una **Aplicación Móvil colaborativa nativa multiplataforma** desarrollada como producto independiente (React Native u otra tecnología multiplataforma) que permite a usuarios aportar información desde el campo, y una API pública documentada para integraciones externas, operando bajo una arquitectura desacoplada y centrada en el usuario (Mobile First).
+Contratar un servicio especializado para el diseño, desarrollo e implementación de una **Aplicación Móvil colaborativa nativa multiplataforma** (React Native u otra tecnología multiplataforma) que permite a usuarios aportar información ambiental desde el campo, un **Backend CMS** para gestión de contenido y contribuciones, y un **sistema de integración con la API del MINAM** para publicar la información en el SIAR del MINAM (que ya cuenta con páginas del SIAR de cada gobierno regional). La información se visualizará en el SIAR del MINAM mediante su API, sin necesidad de desarrollar un portal web propio.
 
 #### 2.2.3. Alcance
 
-- Diseño UX/UI y Prototipado navegable con validación de usabilidad
-- Implementación del Headless CMS Strapi (Back-end) para la gestión de contenido
-- Desarrollo del **Portal Web de consulta** (Next.js/Nuxt.js) con arquitectura SPA y SSR para visualización y consumo de información ambiental
-- **Desarrollo independiente de la Aplicación Móvil colaborativa** con tecnología multiplataforma (React Native u otra) como producto separado del portal web
-- **Sistema de cuentas y usuarios** para la aplicación móvil colaborativa
+- Diseño UX/UI y Prototipado navegable con validación de usabilidad para la aplicación móvil
+- Implementación del Headless CMS Strapi (Back-end) en la nube para la gestión de contenido y contribuciones colaborativas
+- **Desarrollo de la Aplicación Móvil colaborativa** con tecnología multiplataforma nativa (React Native u otra) que permite a usuarios aportar información ambiental desde el campo
+- **Sistema de cuentas y usuarios** para la aplicación móvil colaborativa (OAuth 2.0 con Google/Apple)
 - **Funcionalidades colaborativas en la App Móvil** que permitan a usuarios externos aportar información ambiental de la región desde el campo
-- **API pública documentada** con sistema de autenticación y autorización para uso externo (otras apps, instituciones, personas)
-- **Portal de documentación API** publicado en la web con solicitud de permisos de acceso
-- Despliegue y configuración de la infraestructura en la nube (Cloud)
+- **Almacenamiento de datos brutos de la app móvil** en la base de datos Cloud (Strapi)
+- **Sistema de recopilación de datos en On-Premise** para especialistas GIS (datos brutos y análisis) mediante QGIS/ArcGIS Pro, sin acceso directo a la base de datos
+- **Sistema de replicación ETL** de datos desde On-Premise hacia Cloud para sincronización
+- **Integración con la API del MINAM** para publicar información en el SIAR del MINAM (el MINAM ya cuenta con la estructura y páginas del SIAR de cada gobierno regional)
+- **Sistema de sincronización** que envíe datos desde Cloud hacia el API del MINAM para visualización en el SIAR
+- Despliegue y configuración de la infraestructura en la nube (Cloud) para Backend CMS
 - Compilación y publicación de la Aplicación Móvil nativa (Android APK/AAB e iOS IPA)
-- Integración con el Servidor GIS On-Premise de la GRRNGA (para Geovisor)
+- Integración con el Servidor GIS On-Premise de la GRRNGA (GeoServer) para servicios OGC
 - **Arquitectura flexible** que permita el uso de tecnologías alternativas manteniendo la estructura arquitectónica
 - **Entrega del código fuente completo** con todos los derechos de propiedad intelectual para el Gobierno Regional de La Libertad
-- **Repositorio Git** con todo el código fuente de las aplicaciones (Portal Web y App Móvil) con historial completo de commits
+- **Repositorio Git** con todo el código fuente de las aplicaciones (App Móvil y Backend CMS) con historial completo de commits
 - Capacitación y transferencia tecnológica
 
 #### 2.2.4. Arquitectura General del Sistema
 
 ##### Vista General de la Arquitectura
 
-La plataforma SIAR implementa una **arquitectura híbrida desacoplada** que combina servicios en la nube (Frontend y Backend CMS) con infraestructura On-Premise (Servidor Geoespacial y Base de Datos GIS).
+La plataforma SIAR implementa una **arquitectura híbrida desacoplada** que combina servicios en la nube (Backend CMS y App Móvil) con infraestructura On-Premise (Servidor Geoespacial y Base de Datos GIS), e integración con la API del MINAM para visualización en el SIAR del MINAM.
 
+**Diagrama de Arquitectura:**
+
+```mermaid
+graph TB
+    subgraph USUARIOS["👥 USUARIOS FINALES"]
+        CIUDADANOS[Usuarios Ciudadanos]
+        ESPECIALISTAS[Especialistas GIS]
+    end
+
+    subgraph CLOUD["☁️ CLOUD"]
+        subgraph PRESENTACION["CAPA DE PRESENTACIÓN"]
+            APP[App Móvil Colaborativa<br/>React Native / Flutter]
+        end
+        
+        subgraph APLICACION["CAPA DE APLICACIÓN"]
+            STRAPI[Strapi CMS<br/>Backend Node.js<br/>- Gestión contribuciones<br/>- Moderación<br/>- Integración API MINAM]
+        end
+        
+        subgraph DATOS_CLOUD["CAPA DE DATOS (Cloud)"]
+            BD_CLOUD[(PostgreSQL Cloud<br/>Schema: strapi<br/>Schema: public_data)]
+        end
+    end
+
+    subgraph ONPREMISE["🏢 ON-PREMISE (GRRNGA)"]
+        QGIS[Estaciones GIS<br/>QGIS / ArcGIS Pro]
+        POSTGIS[(PostgreSQL + PostGIS<br/>- gis_working<br/>- gis_master<br/>- gis_temp)]
+        GEOSERVER[GeoServer<br/>Puerto 8080<br/>Servicios OGC]
+        ETL[Script ETL Python<br/>Cron: Diario 2:00 AM]
+    end
+
+    subgraph EXTERNO["🌐 EXTERNO"]
+        API_MINAM[API del MINAM<br/>HTTPS]
+        SIAR_MINAM[SIAR del MINAM<br/>Visualización Pública]
+    end
+
+    CIUDADANOS -->|Contribuciones| APP
+    APP -->|REST API HTTPS| STRAPI
+    STRAPI -->|Lee datos| BD_CLOUD
+    STRAPI -->|HTTP POST/PUT HTTPS| API_MINAM
+    API_MINAM --> SIAR_MINAM
+
+    ESPECIALISTAS -->|Carga datos| QGIS
+    QGIS -->|Conexión local| POSTGIS
+    POSTGIS -->|SQL queries| GEOSERVER
+    GEOSERVER -.->|Servicios OGC| APP
+    
+    POSTGIS -->|Lee datos| ETL
+    ETL -->|Replicación<br/>VPN/TLS| BD_CLOUD
+    
+    style CLOUD fill:#e1f5ff
+    style ONPREMISE fill:#fff4e1
+    style EXTERNO fill:#e8f5e9
 ```
-                        USUARIOS FINALES
-                              │
-                              ▼
-     ┌─────────────────────────────────────────────────┐
-     │      CAPA DE PRESENTACIÓN (Productos Separados) │
-     │  ┌─────────────────────┐  ┌──────────────────┐  │
-     │  │  Portal Web (SSR)   │  │  App Móvil       │  │
-     │  │  (Next.js/Nuxt.js)  │  │  Colaborativa    │  │
-     │  │  - Solo Consulta    │  │  (React Native / │  │
-     │  │                     │  │   Flutter / Otro)│  │
-     │  │  - Producto Web     │  │  - Colaboración  │  │
-     │  │    Independiente    │  │  - Producto      │  │
-     │  │                     │  │    Independiente │  │
-     │  └────┬────────────────┘  └───────┬──────────┘  │
-     └───────┼───────────────────────────┼─────────────┘
-             │                           │   
-    REST/GraphQL (contenido)             │   
-             │                           │    HTTP
-             │                           │    (servicios OGC:
-             ▼                           │    WMS, WFS, WMTS)
-     ┌──────────────────────┐            │     
-     │  CAPA DE APLICACIÓN  │            │
-     │      (Cloud)         │            │
-     │  ┌────────────────┐  │            │
-     │  │  Strapi CMS    │  │            │
-     │  └───────┬────────┘  │            │
-     └──────────┼───────────┘            │
-                │ PostgreSQL             │
-                ▼                        │
-     ┌──────────────────────┐            │
-     │  BD CLOUD (ÚNICA)    │            │
-     │  ┌────────────────┐  │            │
-     │  │ Schema:strapi  │  │            │
-     │  ├────────────────┤  │            │
-     │  │ Schema:        │  │            │
-     │  │ public_data    │  │            │
-     │  └────────────────┘  │            │
-     └──────────▲───────────┘            │
-                │ ETL                    │
-  ══════════════╪════════════════════════╪═══════════
-  ON-PREMISE    │                        │
-  ══════════════╪════════════════════════╪═══════════
-                │                        │
-     ┌──────────┴────────────────────────┼─────────┐
-     │                                   ▼         │
-     │         ┌───────────────────────────────┐   │
-     │         │  SERVIDOR GEOESPACIAL         │   │
-     │         │  GeoServer (Open Source)      │   │
-     │         │  Puerto: 8080                 │   │
-     │         │                               │   │
-     │         │  Expone servicios OGC:        │   │
-     │         │  • WMS (mapas imagen)         │   │
-     │         │  • WFS (vectores)             │   │
-     │         │  • WMTS (tiles)               │   │
-     │         └───────────┬───────────────────┘   │
-     │                     │ SQL Queries           │
-     │                     ▼                       │
-     │         ┌───────────────────────────────┐   │
-     │         │  PostgreSQL + PostGIS         │   │
-     │         │  (On-Premise)                 │   │
-     │         │  ┌─────────────────────────┐  │   │
-     │         │  │ gis_master (publicable) │  │   │
-     │         │  │ gis_working (edición)   │  │   │
-     │         │  │ gis_temp (análisis)     │  │   │
-     │         │  └─────────────────────────┘  │   │
-     │         └───────────┬───────────────────┘   │
-     │                     │ Conexión directa      │
-     │                     ▼                       │
-     │         ┌───────────────────────────────┐   │
-     │         │  Estaciones de Trabajo GIS    │   │
-     │         │  • 1 PC Workstation           │   │
-     │         │  • 2 Laptops                  │   │
-     │         │  Software: ArcGIS Pro / QGIS  │   │
-     │         └───────────────────────────────┘   │
-     └─────────────────────────────────────────────┘
 
-FLUJO DE DATOS:
-1. Portal Web → Strapi (REST API) → BD Cloud [contenido editorial]
-2. Portal Web → GeoServer (OGC) → BD PostGIS On-Premise [mapas]
-3. App Móvil → Strapi (REST API) → BD Cloud [contenido editorial]
-4. App Móvil → GeoServer (OGC) → BD PostGIS On-Premise [mapas]
-5. BD PostGIS On-Premise → ETL → BD Cloud (public_data) [opcional]
+**Flujo de Datos:**
 
-NOTA: Portal Web y App Móvil son productos completamente separados, compartiendo únicamente las APIs del backend (Strapi y GeoServer).
-```
+1. **App Móvil → Cloud:**
+   - Usuario ciudadano → App Móvil → Strapi API (HTTPS) → PostgreSQL Cloud (schema:strapi)
+
+2. **Especialistas GIS → On-Premise:**
+   - Especialista → QGIS/ArcGIS Pro → PostgreSQL On-Premise (conexión local)
+
+3. **On-Premise → Cloud (Replicación):**
+   - Script ETL (On-Premise) lee PostgreSQL On-Premise (localhost)
+   - Script ETL se conecta a PostgreSQL Cloud (VPN/conexión TLS)
+   - Replica datos a schema:public_data
+
+4. **Cloud → MINAM:**
+   - Strapi CMS lee datos de PostgreSQL Cloud (ambos schemas)
+   - Strapi procesa y transforma datos
+   - Strapi envía al API del MINAM (HTTPS)
+   - MINAM publica en SIAR
 
 ##### Flexibilidad Tecnológica y Alternativas
 
@@ -426,30 +416,31 @@ El arquitecto o jefe de proyecto de la empresa proveedora del servicio **puede e
 
 La siguiente estructura de capas y flujos debe mantenerse independientemente de las tecnologías elegidas:
 
-1. **Capa de Presentación** (Frontend)
-   - Separación clara entre Web y Móvil
+1. **Capa de Presentación** (App Móvil)
+   - Aplicación móvil nativa multiplataforma
    - Arquitectura desacoplada del backend
    - Comunicación mediante APIs REST/GraphQL estandarizadas
+   - Almacenamiento de contribuciones en Cloud (NO On-Premise)
 
-2. **Capa de Aplicación** (Backend CMS)
+2. **Capa de Aplicación** (Backend CMS en Cloud)
    - Headless CMS o Backend API
-   - Gestión de contenido y usuarios
-   - APIs públicas y protegidas
+   - Gestión de contenido y contribuciones colaborativas
+   - Integración con API del MINAM para publicación
+   - APIs para App Móvil
 
 3. **Capa de Datos**
-   - Separación Cloud (CMS) / On-Premise (GIS)
+   - Separación Cloud (CMS y contribuciones) / On-Premise (GIS especialistas)
+   - Replicación ETL de On-Premise a Cloud
    - Estándares de datos geoespaciales (OGC)
    - Esquemas de base de datos definidos
 
+4. **Integración Externa**
+   - API del MINAM para publicación en SIAR
+   - Sincronización de datos validados desde Cloud
+
 **Tecnologías Alternativas Permitidas:**
 
-**Frontend Web (Alternativas a Next.js):**
-- **Nuxt.js** (Vue.js) - SSR/SSG similar a Next.js
-- **Remix** (React) - Framework full-stack
-- **SvelteKit** (Svelte) - Framework moderno
-- **Angular Universal** (Angular) - SSR para Angular
-- **Astro** - Framework multi-framework
-- **Requirement:** Debe soportar SSR y Mobile First
+**NOTA:** Ya no se desarrolla un Portal Web propio. La visualización se realiza mediante el SIAR del MINAM usando su API.
 
 **Aplicación Móvil (Tecnologías Permitidas):**
 - **React Native** - Framework multiplataforma nativo (recomendado)
@@ -522,40 +513,34 @@ Independientemente de las tecnologías elegidas, el sistema debe:
 
 **Ejemplo de Aplicación:**
 
-Si el arquitecto decide usar **Nuxt.js en lugar de Next.js**:
-- ✅ Debe mantener mismo resultado funcional (SSR, Mobile First)
-- ✅ Debe mantener APIs REST compatibles
-- ✅ Debe mantener arquitectura de capas separadas
-- ✅ Debe mantener soporte para servicios OGC
-- ✅ Debe mantener funcionalidades colaborativas y de API pública
-
 Si el arquitecto decide usar **Flutter en lugar de React Native** para la app móvil:
 - ✅ Debe ser framework multiplataforma nativo equivalente
-- ✅ Debe compartir APIs del backend con portal web
-- ✅ Debe ser producto independiente con código base separado del portal web
+- ✅ Debe consumir APIs del backend Strapi
+- ✅ Debe almacenar contribuciones directamente en Cloud (Strapi)
 - ✅ Debe tener renderizado nativo y acceso completo a APIs del dispositivo
+- ✅ Debe integrarse con servicios OGC del GeoServer para mapas
 
 #### 2.2.5. Componentes del Sistema por Capas
 
 ##### Servidor Geoespacial (GeoServer)
 
-El Servidor Geoespacial es el **intermediario esencial** que permite que el frontend (Portal Web y App Móvil) consuma los datos geográficos de forma segura y optimizada.
+El Servidor Geoespacial es el **intermediario esencial** que permite que la App Móvil consuma los datos geográficos de forma segura y optimizada.
 
 ##### ¿Por qué es necesario?
 
-**El frontend NUNCA se conecta directamente a la base de datos PostGIS.** En su lugar, el frontend consume **servicios web estandarizados (OGC)** que expone el Servidor Geoespacial.
+**La App Móvil NUNCA se conecta directamente a la base de datos PostGIS.** En su lugar, la App Móvil consume **servicios web estandarizados (OGC)** que expone el Servidor Geoespacial.
 
-**Flujo correcto:**
+**Flujo:**
 ```
-Frontend (Leaflet/MapLibre) 
+App Móvil (React Native Maps) 
     → HTTP Request: http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wms?layer=anp&bbox=...
         → GeoServer recibe petición
             → GeoServer consulta PostGIS: SELECT geom FROM anp WHERE ...
                 → GeoServer renderiza y transforma
-                    → GeoServer devuelve PNG/JSON al Frontend
+                    → GeoServer devuelve PNG/JSON a la App Móvil
 ```
 
-Los navegadores web **no pueden** ejecutar consultas SQL directamente contra PostgreSQL por razones de seguridad y compatibilidad. El Servidor Geoespacial realiza esta transformación de forma segura.
+Las aplicaciones móviles **no pueden** ejecutar consultas SQL directamente contra PostgreSQL por razones de seguridad y compatibilidad. El Servidor Geoespacial realiza esta transformación de forma segura.
 
 ##### ¿Qué hace exactamente?
 
@@ -597,20 +582,20 @@ Los navegadores web **no pueden** ejecutar consultas SQL directamente contra Pos
 - Almacena en caché local (`/geowebcache`) para servir miles de peticiones/segundo
 - Actualiza automáticamente cuando detecta cambios en PostGIS
 
-**5. Expone Servicios OGC que el Frontend consume**
+**5. Expone Servicios OGC que consume la App Móvil**
 
-Estos servicios HTTP son lo que el frontend (Leaflet/MapLibre) consume para mostrar mapas:
+Estos servicios HTTP son consumidos por la aplicación móvil para mostrar mapas:
 
 | Servicio | URL Ejemplo | Qué retorna | Consumido por |
 |----------|-------------|-------------|---------------|
-| **WMS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wms?LAYERS=anp&...` | Imagen PNG del mapa | **Frontend Portal Web** (visualización) |
-| **WFS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wfs?TYPENAME=cuencas&...` | GeoJSON con geometrías | **Frontend Portal Web** (descargas, análisis) |
-| **WMTS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/gwc/service/wmts?layer=siar:basemap&...` | Tile PNG 256x256 | **App Móvil Nativa** (cache offline para modo sin conexión) |
-| **WCS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wcs?COVERAGEID=dem&...` | GeoTIFF (raster) | **Frontend** (descargas especializadas) |
+| **WMS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wms?LAYERS=anp&...` | Imagen PNG del mapa | **App Móvil** (visualización de mapas) |
+| **WFS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wfs?TYPENAME=cuencas&...` | GeoJSON con geometrías | **App Móvil** (descargas, análisis) |
+| **WMTS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/gwc/service/wmts?layer=siar:basemap&...` | Tile PNG 256x256 | **App Móvil** (cache offline para modo sin conexión) |
+| **WCS** | `http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wcs?COVERAGEID=dem&...` | GeoTIFF (raster) | **App Móvil** (descargas especializadas) |
 
 **Nota:** El dominio `gis.regionlalibertad.gob.pe` corresponde al dominio específico del Gobierno Regional de La Libertad para el servidor geoespacial. Este dominio debe configurarse según el dominio oficial del Gobierno Regional de La Libertad. GRRNGA = Gerencia Regional de Recursos Naturales y Gestión Ambiental.
 
-**IMPORTANTE:** El frontend SOLO hace peticiones HTTP a estos endpoints. Nunca ejecuta SQL ni se conecta directamente a PostgreSQL.
+**IMPORTANTE:** La App Móvil SOLO hace peticiones HTTP a estos endpoints. Nunca ejecuta SQL ni se conecta directamente a PostgreSQL.
 
 **6. Control de Acceso y Seguridad**
 - Autenticación básica o integración con LDAP/Active Directory
@@ -626,7 +611,7 @@ Estos servicios HTTP son lo que el frontend (Leaflet/MapLibre) consume para most
 - **IP interna:** 192.168.X.X (red local GRRNGA)
 - **Firewall:** Puerto 8080 (GeoServer) abierto para:
   - Acceso interno: Red local GRRNGA (sin restricciones)
-  - Acceso externo: Solo desde IPs del servicio cloud que aloja Strapi/Frontend
+  - Acceso externo: Solo desde IPs del servicio cloud que aloja Strapi y desde donde se conecta la App Móvil
 - **DNS/NAT:** `gis.regionlalibertad.gob.pe` (o el dominio específico del Gobierno Regional de La Libertad) redirige al servidor On-Premise
   - **Nota:** Este dominio debe ser el dominio oficial del Gobierno Regional de La Libertad. Debe configurarse según el dominio institucional disponible.
 
@@ -637,11 +622,11 @@ Estos servicios HTTP son lo que el frontend (Leaflet/MapLibre) consume para most
 
 ##### ¿Cómo se integra con el resto de la arquitectura?
 
-**Conexiones del Frontend - Arquitectura Desacoplada:**
+**Conexiones de la App Móvil - Arquitectura Desacoplada:**
 
-El frontend tiene **DOS conexiones independientes**:
-1. **Frontend → Strapi (REST API) → BD Cloud:** Obtiene metadatos, noticias, indicadores, texto editorial
-2. **Frontend → GeoServer (OGC HTTP) → BD PostGIS On-Premise:** Obtiene capas geográficas (imágenes, tiles, vectores)
+La App Móvil tiene **DOS conexiones independientes**:
+1. **App Móvil → Strapi (REST API) → BD Cloud:** Obtiene metadatos, noticias, indicadores, texto editorial
+2. **App Móvil → GeoServer (OGC HTTP) → BD PostGIS On-Premise:** Obtiene capas geográficas (imágenes, tiles, vectores)
 
 **Flujo de Trabajo Completo (de carga a visualización):**
 
@@ -656,20 +641,20 @@ El frontend tiene **DOS conexiones independientes**:
    - Crea entrada en Content Type `GeoLayer`
    - Campo `endpoints.wms`: `http://gis.regionlalibertad.gob.pe:8080/.../wms`
    - Campo `endpoints.wfs`: `http://gis.regionlalibertad.gob.pe:8080/.../wfs`
-5. **Frontend (Next.js)** consulta Strapi API para obtener metadatos:
+5. **App Móvil** consulta Strapi API para obtener metadatos:
    - `GET /api/geo-layers?filters[theme][slug]=biodiversidad`
    - Respuesta incluye URLs de servicios OGC del GeoServer
-6. **Leaflet (biblioteca del navegador)** hace peticiones HTTP a GeoServer:
+6. **App Móvil** (React Native Maps) hace peticiones HTTP a GeoServer:
    ```javascript
-   // Frontend hace petición HTTP al GeoServer, NO a la BD
-   L.tileLayer.wms('http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/wms', {
-     layers: 'siar:areas_protegidas',
-     format: 'image/png',
-     transparent: true
-   }).addTo(map);
+   // App Móvil hace petición HTTP al GeoServer, NO a la BD
+   <MapView>
+     <UrlTile
+       urlTemplate="http://gis.regionlalibertad.gob.pe:8080/geoserver/siar/gwc/service/wmts?layer=siar:areas_protegidas&..."
+     />
+   </MapView>
    ```
-7. **GeoServer** consulta PostGIS, renderiza y devuelve PNG al navegador
-8. **Usuario final** visualiza el mapa en tiempo real en su navegador
+7. **GeoServer** consulta PostGIS, renderiza y devuelve PNG/Tiles a la App Móvil
+8. **Usuario final** visualiza el mapa en tiempo real en su dispositivo móvil
 
 **Decisión Tecnológica - GeoServer (Open Source):**
 
@@ -694,57 +679,11 @@ Se utiliza **GeoServer** como servidor geoespacial para el proyecto SIAR debido 
 
 ##### Capa de Presentación - Frontend
 
-##### Portal Web de Consulta (Aplicación Web Estándar)
+**NOTA IMPORTANTE:** Ya no se desarrolla un Portal Web propio. La visualización de la información se realiza mediante el **SIAR del MINAM**, que ya cuenta con la estructura y páginas del SIAR para cada gobierno regional. El sistema desarrollado se enfoca únicamente en:
 
-**El Portal Web es un producto independiente de solo consulta**, desarrollado como aplicación web estándar con SSR para visualización y consumo de información ambiental. **No incluye funcionalidades colaborativas** - estas están disponibles únicamente en la aplicación móvil.
-
-**IMPORTANTE - Acceso Público:**
-- **El Portal Web es completamente público** - No requiere autenticación ni registro de usuarios
-- **No tiene sistema de usuarios** - Todos los contenidos son accesibles sin restricciones
-- **Acceso libre** para cualquier visitante sin necesidad de crear cuenta
-
-**Propósito:**
-- Visualización y consulta de información ambiental regional
-- Exploración de mapas geoespaciales interactivos
-- Consulta de indicadores, documentos, normas y estadísticas
-- Búsqueda y filtrado de información
-- Descarga de datos públicos
-
-**Framework y Tecnologías Core:**
-- **Next.js 14+** (App Router con Server Components) o **Nuxt.js** (Vue.js)
-  - Server-Side Rendering (SSR) para SEO optimizado
-  - Static Site Generation (SSG) para páginas estáticas
-  - Incremental Static Regeneration (ISR) para contenido semi-dinámico
-- **TypeScript 5+** (Tipado estricto en todo el proyecto)
-- **React 18+** o **Vue.js 3+** (según framework elegido)
-
-**Librerías Geoespaciales:**
-- **Leaflet 1.9+** o **MapLibre GL JS 3+** (mapas base)
-  - Soporte de tiles raster y vector
-  - Control de capas dinámico
-  - Integración con servicios WMS/WMTS
-  - Herramientas de consulta espacial y zoom
-- **Turf.js** (análisis espacial del lado del cliente)
-- **Proj4js** (transformaciones de coordenadas CRS)
-
-**UI/UX Libraries:**
-- **Tailwind CSS 3+** (Utility-first styling)
-- **Shadcn/ui** o **Radix UI** (componentes accesibles) o **Vuetify** (si se usa Vue)
-
-**Optimizaciones de Performance:**
-- Code Splitting automático por rutas
-- Lazy Loading de mapas y componentes pesados
-- Image Optimization (WebP/AVIF)
-- Caché HTTP estándar del navegador (sin Service Workers)
-
-**Funcionalidades del Portal Web (Solo Consulta):**
-- Búsqueda avanzada de información (indicadores, documentos, normas)
-- Visualización de mapas interactivos con múltiples capas
-- Filtros por temática, ámbito territorial, fecha
-- Exportación de datos (CSV, Excel, JSON)
-- Generación de mapas estáticos para impresión
-- Descarga de documentos y publicaciones
-- Visualización de estadísticas y gráficos interactivos
+1. **Aplicación Móvil Colaborativa** - Para recopilación de datos desde el campo
+2. **Backend CMS** - Para gestión y procesamiento de datos
+3. **Integración con API del MINAM** - Para publicación en el SIAR
 
 ##### Aplicación Móvil Colaborativa (Producto Independiente)
 
@@ -772,14 +711,19 @@ La app móvil está diseñada específicamente para permitir que ciudadanos, inv
 
 **Arquitectura de la App Móvil:**
 
-**Separación completa del Portal Web:**
+**IMPORTANTE - Almacenamiento de Datos:**
+- **La App Móvil guarda datos DIRECTAMENTE en Cloud (Strapi)**, NO en On-Premise
+- Las contribuciones ciudadanas se envían inmediatamente a Strapi API (Cloud)
+- Los datos brutos (fotos, coordenadas GPS, observaciones) se almacenan en BD Cloud (schema:strapi)
+- **NO hay almacenamiento intermedio en On-Premise** para datos de la app móvil
+
+**Separación completa:**
 - Código base independiente (repositorio separado)
 - Ciclo de desarrollo independiente
 - Despliegue independiente a Play Store / App Store
 - Comparte únicamente las APIs del backend:
-  - Strapi REST API para contenido y autenticación
-  - GeoServer OGC para servicios geoespaciales
-  - API pública documentada
+  - Strapi REST API para contenido y autenticación (Cloud)
+  - GeoServer OGC para servicios geoespaciales (On-Premise, solo lectura)
 
 **Stack Tecnológico Recomendado (React Native):**
 - **React Native 0.72+** con **TypeScript**
@@ -896,14 +840,18 @@ La app móvil está diseñada específicamente para permitir que ciudadanos, inv
 - Optimización de bundle size para datos móviles
 - Uso eficiente de batería para trabajo en campo prolongado
 
-**Diferencias Clave con Portal Web:**
-- **Portal Web:** Solo consulta y visualización de información
-- **App Móvil:** Funcionalidad colaborativa completa para aportar información desde el campo
-- **UI/UX nativa:** Interfaces que siguen las guías de diseño de Android/iOS
-- **Rendimiento:** Renderizado nativo, sin WebView
-- **Acceso a hardware:** GPS, cámara, sensores sin limitaciones
-- **Offline-first:** Funcionalidad completa sin conexión, ideal para trabajo en campo
-- **Notificaciones:** Push notifications nativas para mantener a usuarios informados
+**Flujo de Datos de la App Móvil:**
+
+1. **Usuario ciudadano** captura datos en campo (foto, GPS, observación)
+2. **App Móvil** guarda localmente (modo offline) o envía inmediatamente
+3. **Strapi API (Cloud)** recibe la contribución
+4. **BD Cloud (schema:strapi)** almacena datos brutos
+5. **Editor Ambiental** modera y valida en Strapi CMS
+6. **Datos validados** se procesan y preparan para publicación
+7. **API del MINAM** recibe datos validados desde Strapi
+8. **SIAR del MINAM** publica y visualiza la información
+
+**NOTA:** La visualización final se realiza en el SIAR del MINAM, no en un portal propio.
 
 ##### Capa de Aplicación - Backend CMS
 
@@ -1066,6 +1014,135 @@ La app móvil está diseñada específicamente para permitir que ciudadanos, inv
 - **AWS:** EC2 + RDS PostgreSQL + S3
 - **Google Cloud:** Cloud Run + Cloud SQL + Cloud Storage (recomendado por facilidad)
 - **Railway/Render** (alternativas económicas para instituciones públicas)
+
+##### Integración con API del MINAM para Publicación en SIAR
+
+**Objetivo:** Publicar la información ambiental de La Libertad en el SIAR del MINAM mediante su API. El MINAM ya cuenta con la estructura y páginas del SIAR para cada gobierno regional.
+
+**¿Quién realiza la integración?**
+- **Strapi CMS (Cloud)** - Sistema automatizado que envía datos al API del MINAM
+- **Editor Ambiental (GRRNGA)** - Valida y aprueba datos antes de publicación
+- **Sistema programado** - Sincronización automática según frecuencia configurada
+
+**¿Cómo se realiza la integración?**
+- **Método:** Consumo de API REST del MINAM (HTTPS)
+- **Autenticación:** API Key o OAuth 2.0 proporcionado por el MINAM
+- **Formato de datos:** JSON según especificación del API del MINAM
+- **Transformación:** Strapi transforma datos internos al formato requerido por el MINAM
+
+**¿Cuándo se realiza la integración?**
+- **Frecuencia programada:** Diaria (2:00 AM) o según configuración
+- **Trigger manual:** Editor Ambiental puede forzar sincronización desde Strapi CMS
+- **Eventos:** Cuando se aprueban contribuciones colaborativas o se actualizan datos
+
+**¿Dónde se realiza la integración?**
+- **Origen de datos:** PostgreSQL Cloud (BD Cloud con datos validados en schemas:strapi y public_data)
+- **Procesador:** Strapi CMS en Cloud (aplicación Node.js que lee de PostgreSQL y procesa)
+- **Destino:** API del MINAM (endpoint HTTPS proporcionado por el MINAM)
+- **Visualización final:** SIAR del MINAM - Página del SIAR La Libertad
+
+**Aclaración:**
+- PostgreSQL Cloud no envía directamente al MINAM (las bases de datos no hacen HTTP requests)
+- Strapi CMS (aplicación Node.js) lee de PostgreSQL Cloud y envía al API del MINAM mediante HTTP
+
+**Flujo de Integración con MINAM:**
+
+1. **Recopilación de Datos:**
+   - **App Móvil:** Contribuciones ciudadanas → Strapi API (Cloud) → PostgreSQL Cloud (schema:strapi)
+   - **Especialistas GIS:** Datos y análisis → PostGIS On-Premise (schema:gis_working) → Validación → PostGIS On-Premise (schema:gis_master)
+
+2. **Replicación ETL (On-Premise → Cloud):**
+   - **Script ETL** (ejecutado en servidor On-Premise) lee datos de PostGIS On-Premise (schema:gis_master)
+   - **Conexión segura** (VPN o conexión directa con firewall) hacia PostgreSQL Cloud
+   - **Replicación** de datos procesados a PostgreSQL Cloud (schema:public_data)
+   - **Frecuencia:** Diaria 2:00 AM o manual
+
+3. **Procesamiento y Validación en Strapi:**
+   - **Editor Ambiental:** Modera contribuciones colaborativas en Strapi CMS (desde BD Cloud schema:strapi)
+   - **Editor GIS:** Valida datos geoespaciales replicados (desde BD Cloud schema:public_data)
+   - **Datos validados** se marcan como "listos para publicación" en Strapi
+
+4. **Preparación para MINAM (Strapi lee de PostgreSQL Cloud):**
+   - **Strapi CMS** lee datos validados desde PostgreSQL Cloud:
+     - Datos colaborativos: schema:strapi (contribuciones aprobadas)
+     - Datos geoespaciales: schema:public_data (datos replicados desde On-Premise)
+   - **Strapi procesa y transforma** los datos al formato JSON requerido por API del MINAM
+   - **Validación** de metadatos obligatorios según estándares SINIA
+   - **Agregación** de datos de ambos schemas si es necesario
+
+5. **Envío al API del MINAM:**
+   - **Strapi CMS** (aplicación Node.js) envía datos mediante HTTPS al API del MINAM
+   - **Método:** HTTP POST/PUT requests desde Strapi hacia endpoints del MINAM
+   - **Autenticación:** API Key o OAuth 2.0 proporcionado por el MINAM
+   - **Formato:** JSON según especificación del API del MINAM
+   - **Confirmación:** Strapi recibe respuesta del MINAM y registra estado
+
+6. **Publicación en SIAR:**
+   - **MINAM procesa** los datos recibidos desde Strapi
+   - **MINAM publica** en el SIAR (página La Libertad)
+   - **Visualización** en el SIAR del MINAM
+   - **Usuarios finales** acceden al SIAR del MINAM para consultar información
+
+**Diagrama del Flujo:**
+
+```mermaid
+flowchart LR
+    subgraph ONPREMI["On-Premise"]
+        POSTGIS_LOCAL[(PostgreSQL On-Premise<br/>gis_master)]
+        ETL_SCRIPT[Script ETL Python<br/>Lee datos]
+    end
+    
+    subgraph CLOUD_BD["Cloud - Base de Datos"]
+        POSTGIS_CLOUD[(PostgreSQL Cloud<br/>public_data)]
+    end
+    
+    subgraph CLOUD_APP["Cloud - Aplicación"]
+        STRAPI[Strapi CMS<br/>Node.js<br/>Lee, procesa y transforma]
+    end
+    
+    subgraph MINAM_EXT["Externo"]
+        API_MINAM[API del MINAM<br/>HTTPS]
+        SIAR[SIAR del MINAM<br/>Visualización]
+    end
+    
+    POSTGIS_LOCAL -->|1. Lee datos| ETL_SCRIPT
+    ETL_SCRIPT -->|2. Replica<br/>VPN/TLS| POSTGIS_CLOUD
+    POSTGIS_CLOUD -->|3. Lee datos| STRAPI
+    STRAPI -->|4. Envía datos<br/>HTTP POST/PUT<br/>HTTPS| API_MINAM
+    API_MINAM -->|5. Publica| SIAR
+    
+    style ONPREMI fill:#fff4e1
+    style CLOUD_BD fill:#e1f5ff
+    style CLOUD_APP fill:#e1f5ff
+    style MINAM_EXT fill:#e8f5e9
+```
+
+**Aclaración:**
+- PostgreSQL es una base de datos, no puede enviar HTTP requests
+- Strapi es una aplicación Node.js que puede hacer HTTP requests
+- Strapi (capa de aplicación) lee de PostgreSQL Cloud y envía al API del MINAM
+- Flujo: BD → Aplicación (Strapi) → API Externa (MINAM)
+
+**Endpoints del API del MINAM (Ejemplo - Confirmar con MINAM):**
+- `POST /api/siar/regiones/lalibertad/indicadores` - Publicar indicadores
+- `POST /api/siar/regiones/lalibertad/documentos` - Publicar documentos
+- `POST /api/siar/regiones/lalibertad/capas-geoespaciales` - Publicar capas
+- `PUT /api/siar/regiones/lalibertad/actualizar/:id` - Actualizar datos existentes
+- `GET /api/siar/regiones/lalibertad/estado` - Verificar estado de sincronización
+
+**Requisitos Técnicos:**
+- **Formato de datos:** JSON según especificación del MINAM
+- **Metadatos obligatorios:** Título, resumen, temática, ámbito territorial, fecha, fuente
+- **Estándares:** Compatible con estructura SINIA y taxonomía de 13 temáticas
+- **Versionado:** Mantener historial de cambios para auditoría
+- **Manejo de errores:** Reintentos automáticos en caso de fallo de conexión
+- **Logging:** Registro completo de sincronizaciones y errores
+
+**Monitoreo:**
+- Dashboard en Strapi CMS con estado de sincronización
+- Alertas por email en caso de fallos
+- Logs de todas las operaciones de integración
+- Métricas de datos enviados y publicados
 
 ##### API Pública Documentada para Uso Externo
 
@@ -1323,117 +1400,321 @@ http://gis.regionlalibertad.local:8080/geoserver/siar/wms
 http://gis.regionlalibertad.local:8080/geoserver/siar/wfs
 ```
 
-##### Flujo de Datos y Sincronización ETL
+##### Flujo de Datos y Sincronización ETL - Detalle Completo
 
 **Dirección del Flujo:** On-Premise → Cloud (unidireccional)
 
-**Pipeline de Sincronización:**
+**¿Quién realiza la replicación?**
+- **Sistema automatizado (Script ETL)** - Ejecutado en servidor On-Premise o Cloud
+- **Administrador TI (GRRNGA)** - Configura y monitorea el proceso
+- **Editor GIS (GRRNGA)** - Marca datos como "listos para replicar" en gis_master
 
-**1. Preparación de Datos (On-Premise):**
+**¿Cómo se realiza la replicación?**
+
+**Método de Comunicación On-Premise → Cloud:**
+
+**Opción 1: Script ETL en Servidor On-Premise (RECOMENDADO)**
+- El script ETL se ejecuta **directamente en el servidor On-Premise**
+- Se conecta a PostgreSQL local (localhost) para leer datos
+- Se conecta a PostgreSQL Cloud mediante:
+  - **VPN Site-to-Site** entre red GRRNGA y Cloud Provider (AWS/Azure/GCP)
+  - O **Conexión directa con firewall** permitiendo solo IP del servidor On-Premise
+  - Puerto 5432 (PostgreSQL) abierto solo desde IP del servidor On-Premise
+  - Autenticación mediante usuario/password o certificados SSL
+
+**Opción 2: Script ETL en Cloud (ALTERNATIVA)**
+- El script ETL se ejecuta **en un servidor/interfaz en Cloud** (ej: Lambda, Cloud Function, VM)
+- Se conecta a PostgreSQL On-Premise mediante:
+  - **VPN Site-to-Site** o **VPN Client** desde Cloud hacia red GRRNGA
+  - O **SSH Tunnel** (port forwarding) para acceso seguro
+  - O **Conexión directa** si el servidor On-Premise tiene IP pública (con firewall estricto)
+
+**Configuración de Red Recomendada:**
+
+```mermaid
+graph LR
+    subgraph ONPREM["🏢 ON-PREMISE (GRRNGA)"]
+        POSTGRES_LOCAL[PostgreSQL<br/>IP: 192.168.1.10<br/>Puerto: 5432]
+        ETL_CRON[Script ETL<br/>Cron Job<br/>Lee: localhost:5432]
+    end
+    
+    subgraph CONEXION["🔐 Conexión Segura"]
+        VPN[VPN Site-to-Site<br/>o<br/>Conexión Directa<br/>TLS/SSL]
+    end
+    
+    subgraph CLOUD_BD["☁️ CLOUD (AWS/Azure/GCP)"]
+        POSTGRES_CLOUD[PostgreSQL Cloud<br/>IP: db.cloud.com<br/>Puerto: 5432<br/>Firewall: Solo IP On-Premise]
+    end
+    
+    POSTGRES_LOCAL -->|Lee datos| ETL_CRON
+    ETL_CRON -->|Escribe datos| VPN
+    VPN -->|PostgreSQL/TLS| POSTGRES_CLOUD
+    
+    style ONPREM fill:#fff4e1
+    style CONEXION fill:#ffe0e0
+    style CLOUD_BD fill:#e1f5ff
+```
+
+**Herramientas y Método:**
+- **Script Python** con librerías: psycopg2, sqlalchemy, pandas, geopandas
+- **pg_dump/pg_restore** para migraciones completas
+- **ogr2ogr** (GDAL) para conversión de formatos geoespaciales
+- **Transformación:** Simplificación de geometrías, validación de datos, conversión de formatos
+
+**Seguridad:**
+- **Autenticación:** Usuario/password fuerte o certificados SSL
+- **Encriptación:** TLS/SSL en todas las conexiones
+- **Firewall:** Solo permite conexiones desde IPs autorizadas
+- **VPN:** Recomendado para mayor seguridad
+- **Auditoría:** Logs de todas las conexiones y operaciones
+
+**¿Cuándo se realiza la replicación?**
+- **Frecuencia programada:** Diaria a las 2:00 AM (horario de menor uso)
+- **Trigger manual:** Editor GIS puede solicitar replicación urgente desde Strapi CMS
+- **Eventos:** Cuando se marcan datos como "publicables" en gis_master
+
+**¿Dónde se realiza la replicación?**
+- **Origen:** PostgreSQL/PostGIS On-Premise (schema:gis_master) en servidor físico GRRNGA
+- **Destino:** PostgreSQL/PostGIS Cloud (schema:public_data) en servicio managed (RDS/Cloud SQL)
+- **Ejecución del Script:** Servidor On-Premise (recomendado) o servidor/interfaz en Cloud
+
+**Pipeline de Sincronización Detallado:**
+
+**1. Preparación de Datos (On-Premise) - Editor GIS:**
 ```sql
--- Simplificación de geometrías para web
+-- Editor GIS marca datos como listos para replicación
+UPDATE gis_master.layers_full 
+SET replication_status = 'ready', updated_at = NOW()
+WHERE validation_status = 'approved';
+
+-- Simplificación de geometrías para web (automático o manual)
 CREATE MATERIALIZED VIEW gis_master.layer_web_simplified AS
 SELECT 
     id,
     name,
     ST_Simplify(geom, 0.001) AS geom_simplified, -- Tolerancia ajustable
     attributes,
-    updated_at
-FROM gis_master.layers_full;
+    updated_at,
+    replication_status
+FROM gis_master.layers_full
+WHERE replication_status = 'ready';
 
--- Refresh programado
+-- Refresh programado o manual
 REFRESH MATERIALIZED VIEW gis_master.layer_web_simplified;
 ```
 
-**2. Extracción y Transformación:**
+**2. Extracción y Transformación (Script ETL Automatizado):**
 
-Herramientas opcionales:
-- **pg_dump/pg_restore** (para migraciones completas)
-- **ogr2ogr** (GDAL, para conversión de formatos)
-- **FME** (ETL comercial avanzado, si está disponible)
-- **Python Script personalizado:**
+**Ubicación del Script:** Servidor On-Premise o Cloud (con acceso a ambas BD)
 
+**Herramientas utilizadas:**
+- **Python 3.9+** con librerías: psycopg2, sqlalchemy, pandas, geopandas
+- **ogr2ogr** (GDAL) para conversión de formatos geoespaciales
+- **pg_dump/pg_restore** para migraciones completas
+
+**Script ETL (Ejemplo conceptual):**
 ```python
-# Script ETL (ejemplo conceptual)
+# Script ETL - etl_replication.py
 import psycopg2
 from sqlalchemy import create_engine
+import logging
+from datetime import datetime
 
-# Conexión a BD local
-conn_local = psycopg2.connect(
-    host="localhost",
-    database="siar_local",
-    user="gis_user",
-    password="***"
+# Configuración de logging
+logging.basicConfig(
+    filename='/var/log/siar/etl_replication.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-# Conexión a BD cloud
-engine_cloud = create_engine(
-    "postgresql://user:pass@rds.amazonaws.com:5432/siar_cloud"
-)
+def replicate_data():
+    try:
+        # Conexión a BD On-Premise (desde servidor On-Premise)
+        conn_local = psycopg2.connect(
+            host="localhost",  # o IP del servidor On-Premise
+            database="siar_local",
+            user="etl_user",  # Usuario con permisos de lectura
+            password="***"
+        )
+        
+        # Conexión a BD Cloud (mediante VPN o conexión segura)
+        engine_cloud = create_engine(
+            "postgresql://user:pass@rds.amazonaws.com:5432/siar_cloud"
+        )
+        
+        # Extracción de datos procesados desde gis_master
+        query = """
+            SELECT 
+                id, 
+                name, 
+                ST_AsGeoJSON(geom_simplified) as geom, 
+                attributes,
+                updated_at
+            FROM gis_master.layer_web_simplified
+            WHERE replication_status = 'ready'
+            AND updated_at > %s
+        """
+        
+        cursor = conn_local.cursor()
+        last_sync = get_last_sync_date()  # Obtener última fecha de sincronización
+        cursor.execute(query, (last_sync,))
+        
+        # Transformación y validación
+        records = cursor.fetchall()
+        validated_records = validate_and_transform(records)
+        
+        # Carga a Cloud (schema:public_data)
+        if validated_records:
+            df = pd.DataFrame(validated_records)
+            df.to_sql(
+                'geo_layers', 
+                engine_cloud, 
+                schema='public_data', 
+                if_exists='append',
+                index=False
+            )
+            
+            # Marcar como replicado en On-Premise
+            update_replication_status(conn_local, [r['id'] for r in validated_records])
+            
+            logging.info(f"Replicados {len(validated_records)} registros exitosamente")
+        
+        conn_local.close()
+        
+    except Exception as e:
+        logging.error(f"Error en replicación: {str(e)}")
+        send_alert_email(str(e))
+        raise
 
-# Extracción de datos procesados
-query = """
-    SELECT id, name, ST_AsGeoJSON(geom_simplified) as geom, attributes
-    FROM gis_master.layer_web_simplified
-    WHERE updated_at > %s
-"""
-cursor = conn_local.cursor()
-cursor.execute(query, (last_sync_date,))
-
-# Carga a cloud
-df = pd.DataFrame(cursor.fetchall())
-df.to_sql('geo_layers', engine_cloud, schema='public_data', if_exists='append')
+if __name__ == "__main__":
+    replicate_data()
 ```
 
-**3. Programación:**
-- **Cron Jobs** (Linux) o **Task Scheduler** (Windows)
-- Frecuencia: Diaria (2:00 AM) para datos no críticos
-- Trigger manual para actualizaciones urgentes
+**3. Programación y Ejecución:**
+
+**Ubicación:** Servidor On-Premise (Ubuntu Server 22.04 LTS)
+
+**Método de programación:**
+- **Cron Job** (Linux) configurado en servidor On-Premise
+- **Archivo crontab:** `/etc/cron.d/siar-etl-replication`
+- **Configuración ejemplo:**
+```bash
+# Replicación diaria a las 2:00 AM
+0 2 * * * /usr/bin/python3 /opt/siar/scripts/etl_replication.py >> /var/log/siar/etl.log 2>&1
+```
+
+**Frecuencias:**
+- **Diaria (recomendado):** 2:00 AM para datos no críticos
+- **Manual:** Editor GIS puede solicitar desde Strapi CMS
+- **Urgente:** Administrador TI puede ejecutar script manualmente
 
 **4. Validación y Logging:**
+
+**Validaciones realizadas:**
 - Verificación de integridad (checksums, conteo de registros)
-- Log de errores en tabla de auditoría
-- Notificaciones por correo en caso de fallo
+- Validación de geometrías (ST_IsValid)
+- Verificación de metadatos obligatorios
+- Comparación de conteos antes/después de replicación
 
-##### Gestión de Archivos GIS - Pipeline de Carga (Usuario GIS)
+**Logging:**
+- **Archivo de log:** `/var/log/siar/etl_replication.log`
+- **Tabla de auditoría:** `public_data.replication_log` en BD Cloud
+- **Campos:** timestamp, registros_replicados, estado, errores
 
-**Problema a Resolver:** Permitir que el Editor GIS suba archivos espaciales (Shapefiles, GeoTIFF, GeoJSON) a la base de datos espacial de forma eficiente.
+**Notificaciones:**
+- **Email automático** en caso de fallo a Administrador TI
+- **Dashboard en Strapi CMS** con estado de última replicación
+- **Alertas** si no se replica en 24 horas
 
-**Soluciones Propuestas:**
+**5. Seguridad de la Replicación:**
 
-**Opción 1: Cliente de Escritorio QGIS/ArcGIS Pro** ⭐ **RECOMENDADO**
+- **Conexión segura:** VPN o SSH Tunnel entre On-Premise y Cloud
+- **Credenciales:** Usuario con permisos mínimos (solo lectura en On-Premise, escritura en Cloud)
+- **Encriptación:** TLS/SSL en todas las conexiones
+- **Auditoría:** Log completo de todas las operaciones de replicación
 
-Método tradicional y probado:
-1. Editor GIS trabaja en **QGIS** (gratuito) o **ArcGIS Pro** (licenciado)
-2. Conexión directa a PostgreSQL/PostGIS via DB Manager
-3. Importación con control total: Shapefile → PostGIS tabla
-4. Configuración de capa en GeoServer (Web UI o REST API)
-5. Registro de metadatos en Strapi (formulario web simple)
+##### Gestión de Archivos GIS - Pipeline de Carga (Especialistas GIS)
 
-**Ventajas:**
-- Sin desarrollo adicional (ahorro de costos)
-- Aprovecha herramientas que el usuario ya domina
-- Control total sobre transformaciones y validación
-- Implementación inmediata
+**IMPORTANTE - Restricción de Acceso:**
+- **Los especialistas GIS NO tienen acceso directo a la base de datos PostgreSQL/PostGIS**
+- **NO pueden ejecutar consultas SQL directamente**
+- **Solo pueden trabajar mediante QGIS o ArcGIS Pro** que se conectan a PostGIS
+- **El acceso a la BD es controlado** mediante permisos de usuario limitados
 
-**Flujo de trabajo:**
+**¿Quién realiza la carga de datos?**
+- **Especialistas GIS (GRRNGA)** - Personal técnico con conocimiento en QGIS/ArcGIS Pro
+- **Editor GIS (GRRNGA)** - Responsable de validar y aprobar datos para publicación
+
+**¿Cómo se realiza la carga?**
+- **Método:** QGIS (gratuito) o ArcGIS Pro (licenciado) como cliente de escritorio
+- **Conexión:** QGIS/ArcGIS Pro se conecta a PostgreSQL/PostGIS On-Premise mediante DB Manager
+- **Permisos:** Usuario de BD con permisos limitados (INSERT, UPDATE en schemas específicos, NO DELETE, NO DDL)
+- **Sin acceso SQL directo:** Los especialistas NO pueden ejecutar comandos SQL manualmente
+
+**¿Cuándo se realiza la carga?**
+- **Según necesidad:** Cuando se recopilan nuevos datos o se completan análisis
+- **Frecuencia:** Variable, según proyectos y recopilación de datos
+- **Validación:** Editor GIS valida datos antes de marcarlos como "publicables"
+
+**¿Dónde se realiza la carga?**
+- **Origen:** Archivos GIS locales (Shapefiles, GeoTIFF, GeoJSON) en estaciones de trabajo
+- **Destino:** PostgreSQL/PostGIS On-Premise (schema:gis_working inicialmente)
+- **Procesamiento:** Datos se mueven de gis_working → gis_master después de validación
+
+**Flujo de Trabajo Detallado:**
+
+**1. Recopilación de Datos Brutos:**
+- Especialista GIS recopila datos en campo o procesa información
+- Archivos GIS se guardan localmente en estación de trabajo
+- Formatos: Shapefile, GeoTIFF, GeoJSON, etc.
+
+**2. Carga a PostGIS (vía QGIS/ArcGIS Pro):**
 ```
-1. Editor abre QGIS → Conecta a PostGIS On-Premise
-2. Importa Shapefile a tabla gis_master.anp_nuevas
-3. Valida datos, aplica transformaciones (CRS, limpieza)
-4. Accede a GeoServer → Crea capa desde tabla PostGIS
-5. Accede a Strapi → Registra metadatos + URL de servicios OGC
+Especialista GIS:
+1. Abre QGIS o ArcGIS Pro en estación de trabajo
+2. Se conecta a PostgreSQL/PostGIS On-Premise mediante DB Manager
+   - Host: IP del servidor On-Premise (red interna)
+   - Database: siar_local
+   - Usuario: gis_editor (permisos limitados)
+   - Password: ***
+3. Importa Shapefile/GeoTIFF a schema gis_working
+   - QGIS: DB Manager → Import Layer/File
+   - ArcGIS Pro: Catalog → Database → Import
+4. Valida datos: CRS, atributos, geometrías
+5. Aplica transformaciones necesarias (reproyección, limpieza)
 ```
 
-**Opción 2: Plugin de Strapi para Upload GIS** (Desarrollo custom)
+**3. Validación y Procesamiento:**
+- Editor GIS revisa datos en gis_working
+- Valida calidad, completitud de metadatos
+- Aplica correcciones si es necesario
+- Marca como "validado" y mueve a gis_master
 
-Solo si hay presupuesto para desarrollo adicional:
-- Custom plugin que acepta ZIP (Shapefile), GeoJSON, GeoTIFF
-- Procesa con Node.js GDAL bindings
-- Inserta automáticamente en PostGIS y GeoServer
-- **Costo estimado:** 40-60 horas de desarrollo
+**4. Configuración en GeoServer:**
+- Editor GIS accede a GeoServer (Web UI en puerto 8080)
+- Crea nueva capa desde tabla PostGIS (gis_master)
+- Configura estilos SLD
+- Define permisos de acceso
+- Genera cache de tiles (opcional)
 
-**Recomendación Final:** **Opción 1 (QGIS/ArcGIS Pro)** como solución pragmática y eficiente. La Opción 2 puede considerarse en una segunda fase si se requiere automatización masiva.
+**5. Registro de Metadatos en Strapi:**
+- Editor GIS accede a Strapi CMS (vía VPN o red interna)
+- Crea entrada en Content Type `GeoLayer`
+- Registra metadatos: título, descripción, temática, etc.
+- Asocia URLs de servicios OGC del GeoServer
+
+**6. Replicación a Cloud:**
+- Datos en gis_master se replican a Cloud mediante ETL (ver sección anterior)
+- Editor GIS marca datos como "listos para replicar"
+
+**Restricciones de Seguridad:**
+- **Usuario de BD limitado:** Solo permisos INSERT/UPDATE en schemas específicos
+- **Sin acceso a comandos DDL:** No puede crear/eliminar tablas o schemas
+- **Sin acceso DELETE:** No puede eliminar datos directamente
+- **Logging:** Todas las operaciones se registran en logs de auditoría
+- **VPN requerida:** Acceso a Strapi CMS solo desde red interna o VPN
+
+**Recomendación:** **QGIS/ArcGIS Pro** como método estándar. Es la solución más práctica, segura y eficiente, aprovechando herramientas que los especialistas ya dominan.
 
 ##### Seguridad y Acceso
 
@@ -1457,204 +1738,11 @@ Solo si hay presupuesto para desarrollo adicional:
 
 #### 2.2.6. Requisitos
 
-##### Portal Web de Consulta
+**NOTA IMPORTANTE:** Ya no se desarrolla un Portal Web propio. La visualización de la información se realiza mediante el **SIAR del MINAM**, que ya cuenta con la estructura y páginas del SIAR para cada gobierno regional. Los requisitos se enfocan únicamente en:
 
-**Requisitos No Funcionales del Portal Web:**
-
-| RNF | Especificación Mínima | Justificación y Criterio de Aceptación |
-| :---- | :---- | :---- |
-| **Arquitectura Front-end** | Single Page Application (SPA) con Server-Side Rendering (SSR). | Obligatorio el uso de un *framework* moderno (Next.js/Nuxt.js) para optimizar el SEO y el TTFB (Time To First Byte). |
-| **Mobile First Estricto** | Todo el diseño, maquetado y prototipado del portal web debe ser iniciado y validado para pantallas móviles antes que para escritorio. | Prioriza la accesibilidad ciudadana desde dispositivos móviles. |
-| **Performance (Lighthouse)** | El portal web debe obtener un puntaje mínimo de 90/100 en las métricas de Performance y Accesibilidad de Google Lighthouse en dispositivos móviles. | Medida objetiva de optimización de código y tiempos de carga. |
-| **Diseño UX/UI** | Desarrollo de un Sistema de Diseño (paleta, tipografía, componentes) y presentación de un Informe de Pruebas de Usabilidad con usuarios no técnicos de La Libertad. | Asegura la coherencia visual, la escalabilidad y una interfaz amigable y sencilla, contrarrestando la mala UX de plataformas estatales. |
-| **Seguridad** | Portal Web público sin autenticación. El CMS Strapi (backend) debe ser accesible sólo a través de la red interna (VPN) o con estricto control de acceso para usuarios del Gobierno Regional. Protección contra XSS en el frontend. | Separación clara: Portal público sin usuarios, CMS restringido solo para personal autorizado del Gobierno Regional y Municipalidades. |
-| **Accesibilidad Web** | Cumplimiento con WCAG 2.1 nivel AA mínimo. | Garantiza acceso a personas con discapacidades. |
-| **SEO** | Optimización para motores de búsqueda (meta tags, structured data, sitemap). | Mayor visibilidad del contenido ambiental en búsquedas. |
-
-**Requisitos Funcionales del Portal Web:**
-
-Basados en la coordinación con el Ingeniero Ambiental (Sección 2.1), el Portal Web debe implementar los siguientes módulos y funcionalidades:
-
-**1. Estructura de Navegación Principal (Según 2.1.1):**
-
-- **Módulo de Actualidad:**
-  - Visualización de novedades y contenidos destacados
-  - Galería de imágenes
-  - Videos embebidos
-  - Integración con redes sociales
-  - Filtros por temática y fecha
-
-- **Módulo de Publicaciones:**
-  - Catálogo de publicaciones ambientales, científicas y videos
-  - Buscador avanzado con múltiples filtros:
-    - Por temática (13 temáticas ambientales)
-    - Por tipo de información (Bibliográfica/Documental)
-    - Por ámbito territorial (Departamento → Provincia → Distrito)
-    - Por año, institución, palabras clave
-  - Visualizador de PDFs integrado
-  - Sistema de etiquetado y categorización
-  - Descarga de documentos
-  - Compartir en redes sociales
-  - Metadatos completos según modelo de datos (2.1.3)
-
-- **Módulo de Normas:**
-  - Catálogo de normatividad ambiental regional
-  - Línea de tiempo de normatividad
-  - Buscador por tipo (Ley, Decreto, Resolución, Ordenanza), año, materia
-  - Relaciones entre normas (deroga/modifica) con visualización de relaciones
-  - Alertas de nuevas normas (suscripción por email)
-  - Filtros por ámbito (Nacional, Regional, Provincial, Distrital) y vigencia
-  - Metadatos: tipo, número, fecha, materia, ámbito, vigencia, relaciones (2.1.3)
-
-- **Módulo de Mapas (Mapoteca y Visor SINIA):**
-  - **Visor Geoespacial:**
-    - Compatible con estándares WMS/WFS/WMTS (2.1.4, 2.1.5)
-    - Integración del Visor SINIA (ArcGIS) como acceso rápido
-    - Control de capas (activar/desactivar múltiples capas)
-    - Herramientas de consulta espacial:
-      - Consulta por click (identificar)
-      - Consulta por polígono (selección de área)
-      - Consulta por buffer
-    - Herramientas de medición (distancia, área)
-    - Descarga de datos geográficos en múltiples formatos:
-      - Shapefile (ZIP)
-      - GeoJSON
-      - KML/KMZ
-      - CSV (para datos tabulares)
-    - Generación de mapas estáticos para impresión (PDF, PNG)
-    - Exportación de vistas de mapa con leyenda
-  - **Mapoteca:**
-    - Catálogo de capas geoespaciales disponibles
-    - Filtros por temática, tipo de geometría, fuente
-    - Metadatos completos según modelo de datos (2.1.3):
-      - Título, resumen, tema, tipo de geometría
-      - CRS (EPSG:4326 web, UTM para descarga)
-      - Escala, fuente, frecuencia de actualización
-      - Endpoints: WMS, WFS, WMTS, GeoJSON
-    - Previsualización de capas
-  - **Salvaguardas de Seguridad (2.1.5):**
-    - Para información sensible (PIACI, patrimonio cultural):
-      - Limitar nivel de zoom máximo
-      - Limitar descargas detalladas
-      - Redirigir a geoportales sectoriales con disclaimer
-    - Control de acceso por capa según permisos
-
-- **Módulo de Estadísticas Regionales:**
-  - Visualización de indicadores ambientales por temática (13 temáticas según 2.1.2)
-  - Visualización de series temporales con gráficos interactivos:
-    - Gráficos de línea temporal
-    - Gráficos de barras comparativos
-    - Gráficos de área
-    - Visualización de tendencias
-  - Filtros avanzados:
-    - Por temática (Agua, Aire, Biodiversidad, etc.)
-    - Por ámbito territorial (Departamento → Provincia → Distrito)
-    - Por cuenca (cuando aplique)
-    - Por período temporal
-    - Por indicador específico
-  - Exportación de datos:
-    - CSV
-    - Excel (XLSX)
-    - JSON
-  - Comparativas entre distritos/provincias:
-    - Tablas comparativas
-    - Gráficos de comparación
-  - Metadatos completos según modelo de datos (2.1.3):
-    - Nombre, definición, metodología
-    - Unidad, frecuencia
-    - Fuente, responsable, licencia
-    - Series temporales con fecha ISO, valor numérico, flag de calidad
-
-- **Módulo Acerca de:**
-  - Información institucional (Qué es el SIAR)
-  - Contáctenos
-  - Información sobre la GRRNGA
-  - Enlaces a recursos relacionados
-
-- **Módulo CAR (Comisión Ambiental Regional):**
-  - Información de miembros de la CAR
-  - Documentos y acuerdos de la CAR
-  - Calendario de sesiones
-  - Proyectos en curso
-  - Historial de actividades
-
-**2. Navegación Transversal (Según 2.1.1):**
-
-- **Navegación por Temática:**
-  - Filtrado y navegación por las 13 temáticas ambientales:
-    1. Agua
-    2. Aire y Atmósfera
-    3. Asuntos Socioambientales
-    4. Biodiversidad y Ecosistemas
-    5. Cambio Climático
-    6. Clima y Eventos Naturales
-    7. Consumo Responsable y Producción Sostenible
-    8. Economía Ambiental y Bionegocios
-    9. Gestión de Riesgos y Desastres
-    10. Gestión, Fiscalización y Participación
-    11. Residuos
-    12. Salud Ambiental
-    13. Suelo y Tierra
-  - Cada temática muestra todos los recursos asociados (Indicadores, Documentos, Normas, Capas Geoespaciales)
-
-- **Navegación por Tipo de Información:**
-  - Filtros para:
-    - Estadística (Indicadores y Series Temporales)
-    - Bibliográfica/Documental (Publicaciones)
-    - Normativa (Normas Ambientales)
-    - Geoespacial (Capas y Mapas)
-
-- **Navegación por Ámbito Territorial:**
-  - Jerarquía: Departamento → Provincia → Distrito
-  - Inclusión de Cuencas cuando aplique
-  - Filtrado de recursos por ámbito geográfico
-  - Visualización en mapa del ámbito seleccionado
-
-**3. Buscador Global (Integrado en todos los módulos):**
-
-- Búsqueda full-text en todos los contenidos:
-  - Indicadores
-  - Documentos y Publicaciones
-  - Normas Ambientales
-  - Capas Geoespaciales
-  - Noticias y Actualidad
-- Filtros avanzados por tipo de recurso
-- Resultados paginados con relevancia
-- Sugerencias de búsqueda (autocompletado)
-- Búsqueda por palabras clave y metadatos
-- Búsqueda por fecha de publicación/actualización
-- Historial de búsquedas recientes
-
-**4. Interoperabilidad con Plataformas Nacionales (Según 2.1.4):**
-
-- Integración con plataformas mediante servicios OGC y APIs:
-  - **SINIA** - Sincronización semántica y cosecha de metadatos
-  - **GeoPerú (IDE Nacional)** - Registro del catálogo SIAR
-  - **Geoservidor MINAM y Geobosques** - Servicios geoespaciales
-  - **SERNANP** - Áreas Naturales Protegidas
-  - **SERFOR** - Información forestal
-  - **ANA - SNIRH** - Información hídrica
-  - **SENAMHI** - Clima y estaciones meteorológicas
-  - **MINCUL - BDPI** - Comunidades indígenas (con salvaguardas)
-  - **CENEPRED - SIGRID** - Gestión de riesgos
-  - **INGEMMET - GEOCATMIN** - Peligros geológicos
-  - **OEFA** - Fiscalización ambiental
-- Métodos de integración:
-  - Consumo de capas geográficas vía servicios OGC (WMS/WFS/WMTS)
-  - Consumo de series tabulares vía CSV/JSON/API
-  - Enlaces profundos a visores externos
-  - Registro del catálogo SIAR en GeoPerú
-
-**5. Funcionalidades de Visualización y Consulta:**
-
-- Visualización responsive en todos los dispositivos
-- Modo de visualización de lista y tarjetas
-- Ordenamiento de resultados (por fecha, relevancia, nombre)
-- Paginación de resultados
-- Vista previa de recursos antes de acceder al detalle
-- Compartir enlaces específicos de recursos
-- Impresión de páginas y recursos
-- Exportación de resultados de búsqueda
+1. **Aplicación Móvil Colaborativa** - Para recopilación de datos desde el campo
+2. **Backend CMS** - Para gestión y procesamiento de datos
+3. **Integración con API del MINAM** - Para publicación en el SIAR
 
 ##### Aplicación Móvil Colaborativa
 
