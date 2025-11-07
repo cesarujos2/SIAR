@@ -337,12 +337,12 @@ La plataforma SIAR implementa una **arquitectura híbrida desacoplada** que comb
 
 ```mermaid
 graph TB
-    subgraph USUARIOS["👥 USUARIOS FINALES"]
+    subgraph USUARIOS["USUARIOS FINALES"]
         CIUDADANOS[Usuarios Ciudadanos]
         ESPECIALISTAS[Especialistas GIS]
     end
 
-    subgraph CLOUD["☁️ CLOUD"]
+    subgraph CLOUD["CLOUD"]
         subgraph PRESENTACION["CAPA DE PRESENTACIÓN"]
             APP[App Móvil Colaborativa<br/>React Native / Flutter]
         end
@@ -356,14 +356,14 @@ graph TB
         end
     end
 
-    subgraph ONPREMISE["🏢 ON-PREMISE (GRRNGA)"]
+    subgraph ONPREMISE["ON-PREMISE (GRRNGA)"]
         QGIS[Estaciones GIS<br/>QGIS / ArcGIS Pro]
         POSTGIS[(PostgreSQL + PostGIS<br/>- gis_working<br/>- gis_master<br/>- gis_temp)]
         GEOSERVER[GeoServer<br/>Puerto 8080<br/>Servicios OGC]
         ETL[Script ETL Python<br/>Cron: Diario 2:00 AM]
     end
 
-    subgraph EXTERNO["🌐 EXTERNO"]
+    subgraph EXTERNO["EXTERNO"]
         API_MINAM[API del MINAM<br/>HTTPS]
         SIAR_MINAM[SIAR del MINAM<br/>Visualización Pública]
     end
@@ -514,11 +514,11 @@ Independientemente de las tecnologías elegidas, el sistema debe:
 **Ejemplo de Aplicación:**
 
 Si el arquitecto decide usar **Flutter en lugar de React Native** para la app móvil:
-- ✅ Debe ser framework multiplataforma nativo equivalente
-- ✅ Debe consumir APIs del backend Strapi
-- ✅ Debe almacenar contribuciones directamente en Cloud (Strapi)
-- ✅ Debe tener renderizado nativo y acceso completo a APIs del dispositivo
-- ✅ Debe integrarse con servicios OGC del GeoServer para mapas
+- Debe ser framework multiplataforma nativo equivalente
+- Debe consumir APIs del backend Strapi
+- Debe almacenar contribuciones directamente en Cloud (Strapi)
+- Debe tener renderizado nativo y acceso completo a APIs del dispositivo
+- Debe integrarse con servicios OGC del GeoServer para mapas
 
 #### 2.2.5. Componentes del Sistema por Capas
 
@@ -1433,16 +1433,16 @@ http://gis.regionlalibertad.local:8080/geoserver/siar/wfs
 
 ```mermaid
 graph LR
-    subgraph ONPREM["🏢 ON-PREMISE (GRRNGA)"]
+    subgraph ONPREM["ON-PREMISE (GRRNGA)"]
         POSTGRES_LOCAL[PostgreSQL<br/>IP: 192.168.1.10<br/>Puerto: 5432]
         ETL_CRON[Script ETL<br/>Cron Job<br/>Lee: localhost:5432]
     end
     
-    subgraph CONEXION["🔐 Conexión Segura"]
+    subgraph CONEXION["Conexión Segura"]
         VPN[VPN Site-to-Site<br/>o<br/>Conexión Directa<br/>TLS/SSL]
     end
     
-    subgraph CLOUD_BD["☁️ CLOUD (AWS/Azure/GCP)"]
+    subgraph CLOUD_BD["CLOUD (AWS/Azure/GCP)"]
         POSTGRES_CLOUD[PostgreSQL Cloud<br/>IP: db.cloud.com<br/>Puerto: 5432<br/>Firewall: Solo IP On-Premise]
     end
     
